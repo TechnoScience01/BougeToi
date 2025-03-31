@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="16dp">
+
+    <!-- Liste déroulante pour les aliments -->
+    <Spinner
+            android:id="@+id/spinnerAliment"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"/>
+
+    <!-- Champ pour la quantité -->
+    <EditText
+            android:id="@+id/editTextQuantite"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Quantité"
+            android:inputType="numberDecimal"/>
+
+    <!-- Liste déroulante pour les unités -->
+    <Spinner
+            android:id="@+id/spinnerUnite"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"/>
+
+    <!-- Affichage des calories calculées -->
+    <TextView
+            android:id="@+id/textViewCalories"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Calories : 0"
+            android:textSize="16sp"
+            android:paddingTop="8dp"/>
+</LinearLayout>
