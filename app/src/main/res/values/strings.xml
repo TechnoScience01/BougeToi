@@ -1,3 +1,92 @@
 <resources>
     <string name="app_name">BougeToi</string>
+    <string name="mon_suivi_alimentaire">Mon Suivi Alimentaire</string>
+
+    <!-- Noms des aliments -->
+    <string-array name="aliments">
+        <item>Pomme</item>
+        <item>Banane</item>
+        <item>Riz</item>
+        <item>Lait</item>
+        <item>Poulet</item>
+        <item>Carotte</item>
+        <item>Pâtes</item>
+        <item>Œuf</item>
+        <item>Pain</item>
+        <item>Fromage</item>
+        <item>Poisson</item>
+        <item>Tomate</item>
+        <item>Chocolat</item>
+        <item>Avoine</item>
+        <item>Amande</item>
+        <item>Yaourt</item>
+        <item>Brocoli</item>
+        <item>Steak</item>
+        <item>Huile d\'olive</item>
+        <item>Eau</item>
+        <item>Jus d\'orange</item>
+        <item>Patate douce</item>
+        <item>Saumon</item>
+        <item>Beurre</item>
+        <item>Fraise</item>
+    </string-array>
+
+    <!-- Calories par gramme (ou mL pour liquides) -->
+    <string-array name="calories_par_gramme">
+        <item>0.52</item>  <!-- Pomme -->
+        <item>0.89</item>  <!-- Banane -->
+        <item>1.30</item>  <!-- Riz (cru) -->
+        <item>0.64</item>  <!-- Lait -->
+        <item>1.65</item>  <!-- Poulet (cuit) -->
+        <item>0.41</item>  <!-- Carotte -->
+        <item>1.31</item>  <!-- Pâtes (crues) -->
+        <item>1.55</item>  <!-- Œuf (1 œuf ~ 50g) -->
+        <item>2.65</item>  <!-- Pain -->
+        <item>3.33</item>  <!-- Fromage (cheddar) -->
+        <item>2.06</item>  <!-- Poisson (morue, cuit) -->
+        <item>0.20</item>  <!-- Tomate -->
+        <item>5.36</item>  <!-- Chocolat noir -->
+        <item>1.50</item>  <!-- Avoine (crue) -->
+        <item>5.76</item>  <!-- Amande -->
+        <item>0.61</item>  <!-- Yaourt nature -->
+        <item>0.33</item>  <!-- Brocoli -->
+        <item>2.15</item>  <!-- Steak (bœuf, cuit) -->
+        <item>8.84</item>  <!-- Huile d'olive -->
+        <item>0.00</item>  <!-- Eau -->
+        <item>0.43</item>  <!-- Jus d'orange -->
+        <item>0.86</item>  <!-- Patate douce -->
+        <item>2.06</item>  <!-- Saumon (cuit) -->
+        <item>7.17</item>  <!-- Beurre -->
+        <item>0.32</item>  <!-- Fraise -->
+    </string-array>
+
+    <!-- Poids moyen par unité (en grammes ou mL pour liquides) -->
+    <string-array name="poids_par_unite">
+        <item>182</item>   <!-- Pomme (1 moyenne) -->
+        <item>120</item>   <!-- Banane (1 moyenne) -->
+        <item>50</item>    <!-- Riz (1 portion sèche) -->
+        <item>250</item>   <!-- Lait (1 verre) -->
+        <item>150</item>   <!-- Poulet (1 portion) -->
+        <item>80</item>    <!-- Carotte (1 moyenne) -->
+        <item>70</item>    <!-- Pâtes (1 portion sèche) -->
+        <item>50</item>    <!-- Œuf (1 moyen) -->
+        <item>30</item>    <!-- Pain (1 tranche) -->
+        <item>30</item>    <!-- Fromage (1 tranche) -->
+        <item>150</item>   <!-- Poisson (1 filet) -->
+        <item>90</item>    <!-- Tomate (1 moyenne) -->
+        <item>20</item>    <!-- Chocolat (1 carré) -->
+        <item>40</item>    <!-- Avoine (1 portion) -->
+        <item>10</item>    <!-- Amande (1 unité) -->
+        <item>125</item>   <!-- Yaourt (1 pot) -->
+        <item>85</item>    <!-- Brocoli (1 portion) -->
+        <item>200</item>   <!-- Steak (1 portion) -->
+        <item>15</item>    <!-- Huile d'olive (1 cuillère) -->
+        <item>250</item>   <!-- Eau (1 verre) -->
+        <item>250</item>   <!-- Jus d'orange (1 verre) -->
+        <item>150</item>   <!-- Patate douce (1 moyenne) -->
+        <item>150</item>   <!-- Saumon (1 portion) -->
+        <item>10</item>    <!-- Beurre (1 noix) -->
+        <item>20</item>    <!-- Fraise (1 moyenne) -->
+    </string-array>
+
 </resources>
