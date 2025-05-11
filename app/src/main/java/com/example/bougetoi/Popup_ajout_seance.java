@@ -86,6 +86,7 @@ public class Popup_ajout_seance extends AppCompatActivity implements View.OnClic
             }
         });
     }
+
     private void initializeViews() {
         // Récupérer les références aux vues
         exercisesContainer = findViewById(R.id.exercisesContainer);
@@ -142,6 +143,19 @@ public class Popup_ajout_seance extends AppCompatActivity implements View.OnClic
                 Toast.makeText(this, "Veuillez saisir un nom pour la séance", Toast.LENGTH_SHORT).show();
                 return;
             }
+
+            // Créer une nouvelle séance
+            Seance seance = new Seance(
+                    nomSeance,
+                    dateFormat.format(chosenDate),
+                    dureeStr.isEmpty() ? 0 : Integer.parseInt(dureeStr),
+                    description,
+                    typeSeance,
+                    selectedExercisesList
+            );
+
+            // Sauvegarder la séance dans le fichier JSON
+            JsonReader.saveSeanceToJson(this, seance);
 
             // Créer l'intent de retour avec les données
             Intent resultIntent = new Intent();
@@ -240,6 +254,7 @@ public class Popup_ajout_seance extends AppCompatActivity implements View.OnClic
             selectedExercisesText1.setText(selectedExercisesText1.getText() + " (Cliquer pour modifier)");
         }
     }
+
     private void addExercises(LinearLayout container, String[] exercises) {
         // D'abord vider le conteneur pour éviter les doublons
         container.removeAllViews();
