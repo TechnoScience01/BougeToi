@@ -1,6 +1,7 @@
 package com.example.bougetoi;
 
 import android.content.Context;
+import android.util.Log;
 import com.google.gson.*;
 import com.google.gson.reflect.TypeToken;
 import com.example.bougetoi.Seance;
@@ -70,6 +71,103 @@ public class JsonReader {
 
         return seances;
     }
+
+    public static void addPoidsToJson(Context context, float nouveauPoids) {
+        Gson gson = new GsonBuilder().setPrettyPrinting().create();
+        String fileName = "bougetoidata.json";
+
+        String jsonString = "";
+        try (InputStream inputStream = context.openFileInput(fileName)) {
+            byte[] data = new byte[inputStream.available()];
+            inputStream.read(data);
+            jsonString = new String(data, "UTF-8");
+        } catch (IOException e) {
+            jsonString = "{}"; // fichier vide
+        }
+
+        JsonObject jsonObject = gson.fromJson(jsonString, JsonObject.class);
+        if (jsonObject == null) {
+            jsonObject = new JsonObject();
+        }
+
+        JsonArray poidsArray = jsonObject.has("poids") ? jsonObject.getAsJsonArray("poids") : new JsonArray();
+
+        JsonArray nouveauArray = new JsonArray();
+        nouveauArray.add(nouveauPoids);
+        for (int i = 0; i < poidsArray.size() && i < 29; i++) { // max 30 poids
+            nouveauArray.add(poidsArray.get(i));
+        }
+
+        jsonObject.add("poids", nouveauArray);
+
+        try (FileOutputStream fos = context.openFileOutput(fileName, Context.MODE_PRIVATE);
+             OutputStreamWriter writer = new OutputStreamWriter(fos)) {
+            writer.write(gson.toJson(jsonObject));
+        } catch (IOException e) {
+            throw new RuntimeException("Erreur d'écriture JSON", e);
+        }
+    }
+
+    public static List<Float> getPoidsFromJson(Context context) {
+        Gson gson = new Gson();
+        List<Float> poidsList = new ArrayList<>();
+        String fileName = "bougetoidata.json";
+
+        try (InputStream inputStream = context.openFileInput(fileName)) {
+            byte[] data = new byte[inputStream.available()];
+            inputStream.read(data);
+            String jsonString = new String(data, "UTF-8");
+
+            JsonObject jsonObject = gson.fromJson(jsonString, JsonObject.class);
+            if (jsonObject != null && jsonObject.has("poids")) {
+                JsonArray poidsArray = jsonObject.getAsJsonArray("poids");
+                for (JsonElement element : poidsArray) {
+                    poidsList.add(element.getAsFloat());
+                }
+            }
+        } catch (IOException e) {
+            Log.w("JsonReader", "Fichier JSON inexistant ou vide. Retour fallback.");
+        }
+
+        if (poidsList.isEmpty()) {
+            for (int i = 0; i < 30; i++) {
+                poidsList.add(0f);
+            }
+        }
+
+        return poidsList;
+    }
+    public static void pushPoids(Context context, float nouveauPoids) {
+        List<Float> poidsList = getPoidsFromJson(context);
+
+        // Ajouter en début de liste
+        poidsList.add(0, nouveauPoids);
+
+        // Limiter à 30 éléments
+        if (poidsList.size() > 30) {
+            poidsList = poidsList.subList(0, 30);
+        }
+
+        // Réécriture dans le fichier JSON
+        Gson gson = new GsonBuilder().setPrettyPrinting().create();
+        JsonObject jsonObject = new JsonObject();
+
+        JsonArray poidsArray = new JsonArray();
+        for (Float poids : poidsList) {
+            poidsArray.add(poids);
+        }
+
+        jsonObject.add("poids", poidsArray);
+
+        try (FileOutputStream fos = context.openFileOutput(FILE_NAME, Context.MODE_PRIVATE);
+             OutputStreamWriter writer = new OutputStreamWriter(fos)) {
+            writer.write(gson.toJson(jsonObject));
+        } catch (IOException e) {
+            Log.e("JsonReader", "Erreur d’écriture JSON dans pushPoids", e);
+        }
+    }
+
+
     public static morphodata convertJsonToObject(Context context ) {
         InputStream inputStream = context.getResources().openRawResource(R.raw.bougetoidata);
 

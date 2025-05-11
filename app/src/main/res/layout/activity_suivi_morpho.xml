@@ -82,6 +82,11 @@
                         android:layout_height="wrap_content"
                         android:layout_weight="2"
                         android:hint="kg" android:id="@+id/TI_poids"/>
+                <Button
+                        android:id="@+id/btn_valider_poids"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Valider le poids" />
                 <Space
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content" android:layout_weight="1"/>
