@@ -13,16 +13,30 @@
             android:theme="@style/Theme.BougeToi"
             tools:targetApi="31">
         <activity
-                android:name=".MesSeances"
-                android:exported="false"/>
-        <activity
-                android:name=".MainActivity"
+                android:name=".PageDAccueil"
                 android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
 
                 <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
+        </activity>
+        <activity
+                android:name=".AffichageSeance"
+                android:exported="false"/>
+        <activity
+                android:name=".Popup_ajout_seance"
+                android:exported="false"/>
+        <activity
+                android:name=".Exercices"
+                android:exported="false"/>
+        <activity
+                android:name=".MainActivity"
+                android:exported="false"/>
+        <activity
+                android:name=".MesSeances"
+                android:exported="false">
+
         </activity>
     </application>
 
