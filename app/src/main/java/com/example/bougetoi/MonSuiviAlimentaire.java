@@ -18,6 +18,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
+import android.content.Intent;
 
 public class MonSuiviAlimentaire extends AppCompatActivity {
 
@@ -27,6 +28,7 @@ public class MonSuiviAlimentaire extends AppCompatActivity {
     private String[] aliments;
     private double[] caloriesParGramme;
     private double[] poidsParUnite;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -73,6 +75,27 @@ public class MonSuiviAlimentaire extends AppCompatActivity {
                 showAddFoodDialog();
             }
         });
+
+        addButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                showAddFoodDialog();
+            }
+        });
+
+        // Ajout du gestionnaire pour le bouton Voir_macronutriments
+        Button btnMacronutriments = findViewById(R.id.Voir_macronutriments);
+        if (btnMacronutriments != null) {
+            btnMacronutriments.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    showMacronutrimentsDialog();
+                }
+            });
+        }
+
+
+
     }
 
     private void showAddFoodDialog() {
@@ -119,8 +142,8 @@ public class MonSuiviAlimentaire extends AppCompatActivity {
         });
 
         // Crée la boîte de dialogue
+
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setTitle("Ajouter un aliment");
         builder.setView(dialogView);
         builder.setPositiveButton("Ajouter", (dialog, which) -> {
             int alimentIndex = spinnerAliment.getSelectedItemPosition();
@@ -136,6 +159,7 @@ public class MonSuiviAlimentaire extends AppCompatActivity {
 
         AlertDialog dialog = builder.create();
         dialog.show();
+
     }
 
     private void updateCalories(Spinner spinnerAliment, EditText editTextQuantite, Spinner spinnerUnite, TextView textViewCalories) {
@@ -261,4 +285,35 @@ public class MonSuiviAlimentaire extends AppCompatActivity {
         }
         return totalCalories;
     }
+
+    private void showMacronutrimentsDialog() {
+        // Calculer les macronutriments en fonction des aliments ajoutés
+        double totalCalories = calculNbCaloriesTotales();
+        // Ces valeurs sont approximatives, vous devriez ajuster selon votre application
+        double totalProtein = totalCalories * 0.25 / 4; // 25% des calories, 4 calories par gramme
+        double totalCarbs = totalCalories * 0.50 / 4;   // 50% des calories, 4 calories par gramme
+        double totalFat = totalCalories * 0.25 / 9;     // 25% des calories, 9 calories par gramme
+
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle("Macronutriments");
+
+        // Créer une vue pour le dialogue
+        LayoutInflater inflater = this.getLayoutInflater();
+        View dialogView = inflater.inflate(android.R.layout.simple_list_item_1, null);
+        TextView textView = new TextView(this);
+        textView.setPadding(20, 20, 20, 20);
+        textView.setText(
+                "Calories totales: " + String.format("%.0f", totalCalories) + " kcal\n" +
+                        "Protéines: " + String.format("%.1f", totalProtein) + " g\n" +
+                        "Glucides: " + String.format("%.1f", totalCarbs) + " g\n" +
+                        "Lipides: " + String.format("%.1f", totalFat) + " g"
+        );
+
+        builder.setView(textView);
+        builder.setPositiveButton("OK", null);
+
+        AlertDialog dialog = builder.create();
+        dialog.show();
+    }
+
 }
