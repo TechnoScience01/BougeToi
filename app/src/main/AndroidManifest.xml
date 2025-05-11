@@ -20,9 +20,15 @@
                 android:exported="false"/>
         <activity
                 android:name=".MonSuiviAlimentaire"
-                android:exported="false"/>
+                android:exported="false">
+       </activity>
         <activity
                 android:name=".SuiviMorpho"
+                android:exported="false">
+
+        </activity>
+        <activity
+                android:name=".PageDAccueil"
                 android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
@@ -38,9 +44,6 @@
                 android:exported="false"/>
         <activity
                 android:name=".Exercices"
-                android:exported="false"/>
-        <activity
-                android:name=".MainActivity"
                 android:exported="false"/>
         <activity
                 android:name=".MesSeances"
