@@ -1,0 +1,135 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.cardview.widget.CardView
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="8dp">
+
+    <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+        <!-- Header -->
+        <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Ajouter un aliment"
+                android:textSize="20sp"
+                android:textStyle="bold"
+                android:textColor="@color/white"
+                android:background="@color/green2"
+                android:padding="16dp"
+                android:gravity="center"
+
+
+        />
+
+        <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="16dp">
+
+            <!-- Aliment selection -->
+            <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Sélectionner un aliment"
+                    android:textSize="16sp"
+                    android:textColor="@color/black"
+                    android:layout_marginBottom="8dp"/>
+
+            <com.google.android.material.card.MaterialCardView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    app:cardElevation="2dp"
+                    app:cardCornerRadius="8dp"
+                    app:strokeWidth="1dp"
+                    app:strokeColor="@color/light_gray">
+
+                <Spinner
+                        android:id="@+id/spinnerAliment"
+                        android:layout_width="match_parent"
+                        android:layout_height="48dp"
+                        android:background="@android:color/transparent"
+                        android:paddingStart="8dp"
+                        android:paddingEnd="8dp"/>
+            </com.google.android.material.card.MaterialCardView>
+
+            <!-- Quantity -->
+            <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Quantité"
+                    android:textSize="16sp"
+                    android:textColor="@color/black"
+                    android:layout_marginTop="16dp"
+                    android:layout_marginBottom="8dp"/>
+
+            <com.google.android.material.textfield.TextInputLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    app:boxStrokeColor="@color/green2"
+                    app:hintTextColor="@color/green2">
+
+                <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/editTextQuantite"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:inputType="numberDecimal"
+                        android:hint="Entrez la quantité"/>
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <!-- Unit selection -->
+            <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Unité"
+                    android:textSize="16sp"
+                    android:textColor="@color/black"
+                    android:layout_marginTop="16dp"
+                    android:layout_marginBottom="8dp"/>
+
+            <com.google.android.material.card.MaterialCardView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    app:cardElevation="2dp"
+                    app:cardCornerRadius="8dp"
+                    app:strokeWidth="1dp"
+                    app:strokeColor="@color/light_gray">
+
+                <Spinner
+                        android:id="@+id/spinnerUnite"
+                        android:layout_width="match_parent"
+                        android:layout_height="48dp"
+                        android:background="@android:color/transparent"
+                        android:paddingStart="8dp"
+                        android:paddingEnd="8dp"/>
+            </com.google.android.material.card.MaterialCardView>
+
+            <!-- Calories display -->
+            <androidx.cardview.widget.CardView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="24dp"
+                    app:cardBackgroundColor="@color/light_green"
+                    app:cardCornerRadius="8dp"
+                    app:cardElevation="0dp">
+
+                <TextView
+                        android:id="@+id/textViewCalories"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="Calories : 0"
+                        android:textSize="18sp"
+                        android:textStyle="bold"
+                        android:textColor="@color/black"
+                        android:padding="12dp"
+                        android:gravity="center"/>
+            </androidx.cardview.widget.CardView>
+
+        </LinearLayout>
+    </LinearLayout>
+</androidx.cardview.widget.CardView>

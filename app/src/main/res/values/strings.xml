@@ -1,3 +1,179 @@
 <resources>
     <string name="app_name">BougeToi</string>
+    <string name="mon_suivi_alimentaire">Mon Suivi Alimentaire</string>
+    <string name="resume_macronutriments">Résumé des Macronutriments</string>
+
+    <!-- Noms des aliments -->
+    <string-array name="aliments">
+        <item>Pomme</item>
+        <item>Banane</item>
+        <item>Riz</item>
+        <item>Lait</item>
+        <item>Poulet</item>
+        <item>Carotte</item>
+        <item>Pâtes</item>
+        <item>Œuf</item>
+        <item>Pain</item>
+        <item>Fromage</item>
+        <item>Poisson</item>
+        <item>Tomate</item>
+        <item>Chocolat</item>
+        <item>Avoine</item>
+        <item>Amande</item>
+        <item>Yaourt</item>
+        <item>Brocoli</item>
+        <item>Steak</item>
+        <item>Huile olive</item>
+        <item>Eau</item>
+        <item>Jus orange</item>
+        <item>Patate douce</item>
+        <item>Saumon</item>
+        <item>Beurre</item>
+        <item>Fraise</item>
+    </string-array>
+
+    <!-- Calories par gramme (ou mL pour liquides) -->
+    <string-array name="calories_par_gramme">
+        <item>0.52</item>
+        <item>0.89</item>
+        <item>1.30</item>
+        <item>0.64</item>
+        <item>1.65</item>
+        <item>0.41</item>
+        <item>1.31</item>
+        <item>1.55</item>
+        <item>2.65</item>
+        <item>3.33</item>
+        <item>2.06</item>
+        <item>0.20</item>
+        <item>5.36</item>
+        <item>1.50</item>
+        <item>5.76</item>
+        <item>0.61</item>
+        <item>0.33</item>
+        <item>2.15</item>
+        <item>8.84</item>
+        <item>0.00</item>
+        <item>0.43</item>
+        <item>0.86</item>
+        <item>2.06</item>
+        <item>7.17</item>
+        <item>0.32</item>
+    </string-array>
+
+    <!-- Protéines par gramme -->
+    <string-array name="proteines_par_gramme">
+        <item>0.03</item>
+        <item>0.01</item>
+        <item>0.02</item>
+        <item>0.03</item>
+        <item>0.31</item>
+        <item>0.01</item>
+        <item>0.05</item>
+        <item>0.13</item>
+        <item>0.09</item>
+        <item>0.25</item>
+        <item>0.22</item>
+        <item>0.01</item>
+        <item>0.07</item>
+        <item>0.13</item>
+        <item>0.21</item>
+        <item>0.05</item>
+        <item>0.03</item>
+        <item>0.26</item>
+        <item>0.00</item>
+        <item>0.00</item>
+        <item>0.01</item>
+        <item>0.02</item>
+        <item>0.20</item>
+        <item>0.01</item>
+        <item>0.01</item>
+    </string-array>
+
+    <!-- Glucides par gramme -->
+    <string-array name="glucides_par_gramme">
+        <item>0.14</item>
+        <item>0.23</item>
+        <item>0.28</item>
+        <item>0.05</item>
+        <item>0.00</item>
+        <item>0.10</item>
+        <item>0.25</item>
+        <item>0.01</item>
+        <item>0.50</item>
+        <item>0.01</item>
+        <item>0.00</item>
+        <item>0.04</item>
+        <item>0.60</item>
+        <item>0.66</item>
+        <item>0.22</item>
+        <item>0.04</item>
+        <item>0.07</item>
+        <item>0.00</item>
+        <item>0.00</item>
+        <item>0.00</item>
+        <item>0.10</item>
+        <item>0.20</item>
+        <item>0.00</item>
+        <item>0.00</item>
+        <item>0.08</item>
+    </string-array>
+
+    <!-- Lipides par gramme -->
+    <string-array name="lipides_par_gramme">
+        <item>0.00</item>
+        <item>0.00</item>
+        <item>0.00</item>
+        <item>0.03</item>
+        <item>0.04</item>
+        <item>0.00</item>
+        <item>0.01</item>
+        <item>0.11</item>
+        <item>0.03</item>
+        <item>0.27</item>
+        <item>0.10</item>
+        <item>0.00</item>
+        <item>0.32</item>
+        <item>0.07</item>
+        <item>0.50</item>
+        <item>0.03</item>
+        <item>0.00</item>
+        <item>0.15</item>
+        <item>1.00</item>
+        <item>0.00</item>
+        <item>0.00</item>
+        <item>0.00</item>
+        <item>0.13</item>
+        <item>0.81</item>
+        <item>0.00</item>
+    </string-array>
+
+    <!-- Poids moyen par unité (en grammes ou mL pour liquides) -->
+    <string-array name="poids_par_unite">
+        <item>182</item>   <!-- Pomme (1 moyenne) -->
+        <item>120</item>   <!-- Banane (1 moyenne) -->
+        <item>50</item>    <!-- Riz (1 portion sèche) -->
+        <item>250</item>   <!-- Lait (1 verre) -->
+        <item>150</item>   <!-- Poulet (1 portion) -->
+        <item>80</item>    <!-- Carotte (1 moyenne) -->
+        <item>70</item>    <!-- Pâtes (1 portion sèche) -->
+        <item>50</item>    <!-- Œuf (1 moyen) -->
+        <item>30</item>    <!-- Pain (1 tranche) -->
+        <item>30</item>    <!-- Fromage (1 tranche) -->
+        <item>150</item>   <!-- Poisson (1 filet) -->
+        <item>90</item>    <!-- Tomate (1 moyenne) -->
+        <item>20</item>    <!-- Chocolat (1 carré) -->
+        <item>40</item>    <!-- Avoine (1 portion) -->
+        <item>10</item>    <!-- Amande (1 unité) -->
+        <item>125</item>   <!-- Yaourt (1 pot) -->
+        <item>85</item>    <!-- Brocoli (1 portion) -->
+        <item>200</item>   <!-- Steak (1 portion) -->
+        <item>15</item>    <!-- Huile d'olive (1 cuillère) -->
+        <item>250</item>   <!-- Eau (1 verre) -->
+        <item>250</item>   <!-- Jus d'orange (1 verre) -->
+        <item>150</item>   <!-- Patate douce (1 moyenne) -->
+        <item>150</item>   <!-- Saumon (1 portion) -->
+        <item>10</item>    <!-- Beurre (1 noix) -->
+        <item>20</item>    <!-- Fraise (1 moyenne) -->
+    </string-array>
 </resources>
