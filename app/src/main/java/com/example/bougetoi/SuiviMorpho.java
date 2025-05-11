@@ -1,13 +1,16 @@
 package com.example.bougetoi;
 
+import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.Spinner;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.example.bougetoi.databinding.ActivityMesSeancesBinding;
 import com.github.mikephil.charting.charts.LineChart;
 import com.github.mikephil.charting.components.LimitLine;
 import com.github.mikephil.charting.components.XAxis;
@@ -27,15 +30,23 @@ import java.util.Locale;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-public class SuiviMorpho extends AppCompatActivity {
+import com.example.bougetoi.databinding.ActivitySuiviMorphoBinding;
+
+public class SuiviMorpho extends AppCompatActivity implements View.OnClickListener {
 
     private TextInputEditText inputPoids;
+
+    private ActivitySuiviMorphoBinding binding;
     private LineChart lineChart;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_suivi_morpho);
+
+        binding = ActivitySuiviMorphoBinding.inflate(getLayoutInflater());
+        setContentView(binding.getRoot());
+        //setContentView(R.layout.activity_suivi_morpho);
+        binding.flecheRetour.setOnClickListener(this);
 
         ExecutorService executer = Executors.newSingleThreadExecutor();
         executer.execute(new Runnable() {
@@ -177,5 +188,18 @@ public class SuiviMorpho extends AppCompatActivity {
         yAxis.addLimitLine(objectifLine);
 
         lineChart.invalidate(); // refresh visuel
+    }
+
+    public void onClick(View view) {
+        int id = view.getId();
+       if (id == R.id.flecheRetour) {
+            // Terminer cette activité pour revenir en arrière
+            finish();
+        }
+    }
+
+    @Override
+    public void onPointerCaptureChanged(boolean hasCapture) {
+        super.onPointerCaptureChanged(hasCapture);
     }
 }

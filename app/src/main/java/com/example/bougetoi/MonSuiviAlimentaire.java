@@ -20,7 +20,9 @@ import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 import android.content.Intent;
 
-public class MonSuiviAlimentaire extends AppCompatActivity {
+import com.example.bougetoi.databinding.ActivityMonSuiviAlimentaireBinding;
+
+public class MonSuiviAlimentaire extends AppCompatActivity implements View.OnClickListener {
 
     private TableLayout tableLayout;
     private TextView actuellesCalories;
@@ -29,10 +31,17 @@ public class MonSuiviAlimentaire extends AppCompatActivity {
     private double[] caloriesParGramme;
     private double[] poidsParUnite;
 
+    private ActivityMonSuiviAlimentaireBinding binding;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        binding = ActivityMonSuiviAlimentaireBinding.inflate(getLayoutInflater());
+        setContentView(binding.getRoot());
+
+        binding.toolbar.setOnClickListener(this);
+
         EdgeToEdge.enable(this);
         setContentView(R.layout.activity_mon_suivi_alimentaire);
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
@@ -316,4 +325,12 @@ public class MonSuiviAlimentaire extends AppCompatActivity {
         dialog.show();
     }
 
+    @Override
+    public void onClick(View view) {
+        int id = view.getId();
+        if (id == R.id.toolbar) {
+            // Terminer cette activité pour revenir en arrière
+            finish();
+        }
+    }
 }

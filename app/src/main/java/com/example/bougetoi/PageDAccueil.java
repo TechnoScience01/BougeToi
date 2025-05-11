@@ -37,8 +37,8 @@ public class PageDAccueil extends AppCompatActivity {
             public void onClick(View v) {
                 Toast.makeText(PageDAccueil.this, "Mon suivi alimentaire", Toast.LENGTH_SHORT).show();
                 // Navigation à implémenter
-                // Intent intent = new Intent(PageDAccueil.this, SuiviAlimentaire.class);
-                // startActivity(intent);
+                 Intent intent = new Intent(PageDAccueil.this, MonSuiviAlimentaire.class);
+                 startActivity(intent);
             }
         });
 
@@ -47,8 +47,8 @@ public class PageDAccueil extends AppCompatActivity {
             public void onClick(View v) {
                 Toast.makeText(PageDAccueil.this, "Mon suivi morphologique", Toast.LENGTH_SHORT).show();
                 // Navigation à implémenter
-                // Intent intent = new Intent(PageDAccueil.this, SuiviMorphologique.class);
-                // startActivity(intent);
+                Intent intent = new Intent(PageDAccueil.this, SuiviMorpho.class);
+                startActivity(intent);
             }
         });
 
