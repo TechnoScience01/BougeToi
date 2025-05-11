@@ -54,22 +54,7 @@ public class JsonReader {
             throw new RuntimeException("Erreur lors de l'écriture du fichier JSON", e);
         }
     }
-    public static List<Seance> getSeancesFromJson(Context context) {
-        Gson gson = new Gson();
-        List<Seance> seances = new ArrayList<>();
 
-        try (InputStream inputStream = context.openFileInput(FILE_NAME)) {
-            byte[] data = new byte[inputStream.available()];
-            inputStream.read(data);
-            String jsonString = new String(data, "UTF-8");
-
-            seances = gson.fromJson(jsonString, new TypeToken<List<Seance>>() {}.getType());
-        } catch (Exception e) {
-            // Retourne une liste vide si le fichier n'existe pas ou en cas d'erreur
-        }
-
-        return seances;
-    }
     public static morphodata convertJsonToObject(Context context ) {
         InputStream inputStream = context.getResources().openRawResource(R.raw.bougetoidata);
 
