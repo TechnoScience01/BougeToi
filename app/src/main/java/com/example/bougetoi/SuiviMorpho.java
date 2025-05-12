@@ -66,21 +66,19 @@ public class SuiviMorpho extends AppCompatActivity implements View.OnClickListen
         binding.flecheRetour.setOnClickListener(this);
 
         ExecutorService executer = Executors.newSingleThreadExecutor();
-        executer.execute(new Runnable() {
-            public void run() {
-                morphodata Morphodata = JsonReader.convertJsonToObject(SuiviMorpho.this);
+        executer.execute(() -> {
+            MorphoData morphodata = JsonReader.convertJsonToObject(SuiviMorpho.this);
 
-                runOnUiThread(new Runnable() {
-                    public void run() {
-
-                                List<String> poids = Morphodata.getPoids();
-                                Log.d("DEBUG_MORPHO", "Poids JSON : " + poids);
-                                // ou stocker dans une variable membre pour l'utiliser plus tard
-
-                    }
-                });
-            }
+            runOnUiThread(() -> {
+                if (morphodata != null && morphodata.getPoids() != null) {
+                    List<String> poids = morphodata.getPoids();
+                    Log.d("DEBUG_MORPHO", "Poids JSON : " + poids);
+                } else {
+                    Log.w("DEBUG_MORPHO", "Erreur : morphodata ou getPoids() est null");
+                }
+            });
         });
+
 
 
         // Saisie du poids
@@ -89,8 +87,9 @@ public class SuiviMorpho extends AppCompatActivity implements View.OnClickListen
         if (dernierPoids != null && dernierPoids > 0) {
             inputPoids.setText(String.format(Locale.getDefault(), "%.1f", dernierPoids));
 
-            // 👉 Calcule automatiquement l'IMC avec une taille par défaut de 1.60m
-            float taille = 1.60f;
+            float taille = JsonReader.getTaille(this);
+            if (taille <= 0f) taille = 1.60f;  // fallback au cas où taille est absente ou invalide
+
             float imc = dernierPoids / (taille * taille);
             tvImc.setText(String.format(Locale.getDefault(), "%.2f", imc));
         } else {
@@ -242,7 +241,13 @@ public class SuiviMorpho extends AppCompatActivity implements View.OnClickListen
         yAxis.setAxisMaximum(maxPoids + marge);
 
         yAxis.removeAllLimitLines();
-        LimitLine objectifLine = new LimitLine(70, "Objectif 70 kg");
+        float objectifPoids = JsonReader.getObjectifPoids(this);
+        if (objectifPoids <= 0f) {
+            objectifPoids = 70f; // valeur par défaut si absente
+            Log.w("SuiviMorpho", "Objectif poids manquant, 70 kg utilisé par défaut");
+        }
+
+        LimitLine objectifLine = new LimitLine(objectifPoids, "Objectif " + objectifPoids + " kg");
         objectifLine.setLineColor(Color.RED);
         objectifLine.setLineWidth(2);
         objectifLine.setTextColor(Color.RED);
@@ -250,7 +255,18 @@ public class SuiviMorpho extends AppCompatActivity implements View.OnClickListen
         objectifLine.enableDashedLine(10, 10, 0);
         yAxis.addLimitLine(objectifLine);
 
+
         lineChart.invalidate(); // Redessine le graphe
+        try {
+            float poids = Float.parseFloat(saisie);
+            float taille = JsonReader.getTaille(this);
+            if (taille <= 0f) taille = 1.60f;
+            float imc = poids / (taille * taille);
+            tvImc.setText(String.format(Locale.getDefault(), "%.2f", imc));
+        } catch (Exception e) {
+            tvImc.setText("0.0");
+            Log.w("SuiviMorpho", "Impossible de calculer l'IMC : " + e.getMessage());
+        }
     }
 
     public void onClick(View view) {

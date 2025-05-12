@@ -2,11 +2,11 @@ package com.example.bougetoi;
 
 import java.util.List;
 
-public class morphodata {
+public class MorphoData {
     private String test;
     private List<String> poids;
 
-    public morphodata() {
+    public MorphoData() {
     }
 
     public String getTest() {
