@@ -4,7 +4,7 @@
             xmlns:tools="http://schemas.android.com/tools"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:fillViewport="true">
+            android:fillViewport="true" android:id="@+id/imc">
     <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/main"
             android:layout_width="match_parent"
@@ -82,6 +82,14 @@
                         android:layout_height="wrap_content"
                         android:layout_weight="2"
                         android:hint="kg" android:id="@+id/TI_poids"/>
+                <com.google.android.material.button.MaterialButton
+                        android:id="@+id/btn_valider_poids"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Valider le poids"
+                        app:backgroundTint="@color/green"
+                        android:textColor="@android:color/white"/>
+
                 <Space
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content" android:layout_weight="1"/>
@@ -124,14 +132,17 @@
                         android:text="Votre IMC est de :"/>
 
                 <TextView
+                        android:id="@+id/TV_imc"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
                         android:text="22.8"
                         android:gravity="end"/>
+
                 <Space
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content" android:layout_weight="1"/>
+
             </LinearLayout>
             <TextView
                     android:text="Votre objectif de poids est de : 70kg"
