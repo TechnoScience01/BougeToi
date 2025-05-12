@@ -173,7 +173,8 @@
                             android:layout_marginTop="12dp"
                             app:trackThickness="10dp"
                             app:trackColor="@color/light_green"
-                            app:indicatorColor="@color/green2"/>
+                            app:indicatorColor="@color/green2"
+                    />
 
                     <androidx.constraintlayout.widget.ConstraintLayout
                             android:layout_width="match_parent"

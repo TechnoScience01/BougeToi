@@ -1,6 +1,7 @@
 package com.example.bougetoi;
 
 import android.annotation.SuppressLint;
+import android.content.res.ColorStateList;
 import android.os.Build;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -15,7 +16,7 @@ import androidx.core.view.WindowInsetsCompat;
 import com.example.bougetoi.databinding.ActivityMonSuiviAlimentaireBinding;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-
+import android.content.res.ColorStateList;
 import java.io.File;
 import java.io.FileWriter;
 import java.nio.file.Files;
@@ -277,9 +278,13 @@ public class MonSuiviAlimentaire extends AppCompatActivity {
     private void updateTotalCalories() {
         double totalCalories = calculNbCaloriesTotales();
         binding.actuellesCalories.setText(String.format("%.0f", totalCalories));
-        double caloriesMax = 2000; // TODO: Make configurable
-        binding.progressBar.setMax((int) caloriesMax);
+
+        float objectifCalorique = JsonReader.getObjectifCalorique(this);
+        binding.objectifCalories.setText(String.format("%.0f", objectifCalorique));
+
+        binding.progressBar.setMax((int) objectifCalorique);
         binding.progressBar.setProgress((int) totalCalories);
+
     }
 
     private double calculNbCaloriesTotales() {
