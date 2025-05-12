@@ -12,6 +12,10 @@ import java.io.OutputStreamWriter;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.google.gson.*;
+import java.io.*;
+import java.nio.charset.StandardCharsets;
+
 public class JsonReader {
     private static final String FILE_NAME = "bougetoidata.json";
 
@@ -85,4 +89,97 @@ public class JsonReader {
         }
         return new Gson().fromJson(jsonString, new TypeToken<morphodata>(){}.getType());
     }
+    public static void saveSuiviToJson(Context context, MonSuiviAlimentaire.SuiviJournalier suivi) {
+        Gson gson = new GsonBuilder().setPrettyPrinting().create();
+        String jsonString = "";
+        String FILE_NAME = "bougetoidata.json";
+
+        // Charger le contenu du fichier JSON existant
+        jsonString = readFileFromContext(context, FILE_NAME);
+
+        // Convertir le JSON en objet modifiable
+        JsonObject rootObject = gson.fromJson(jsonString, JsonObject.class);
+        if (rootObject == null) {
+            rootObject = new JsonObject();
+        }
+
+        // Vérifie ou crée l'objet "suivis"
+        JsonArray suivisArray = rootObject.has("suivis") ? rootObject.getAsJsonArray("suivis") : new JsonArray();
+
+        // Vérifier si un suivi pour aujourd'hui existe déjà
+        boolean found = false;
+        for (JsonElement element : suivisArray) {
+            JsonObject obj = element.getAsJsonObject();
+            String date = obj.get("date").getAsString();
+
+            // Si la date correspond à aujourd'hui, on met à jour le suivi
+            if (date.equals(suivi.date)) {
+                obj.add("aliments", gson.toJsonTree(suivi.aliments));  // Ajouter/mettre à jour les aliments
+                found = true;
+                break;
+            }
+        }
+
+        // Si le suivi pour aujourd'hui n'a pas été trouvé, on l'ajoute à la liste
+        if (!found) {
+            JsonElement suiviJson = gson.toJsonTree(suivi);
+            suivisArray.add(suiviJson);
+        }
+
+        // Mettre à jour l'objet JSON avec le tableau "suivis"
+        rootObject.add("suivis", suivisArray);
+
+        // Sauvegarder le fichier avec les nouvelles données
+        writeFileToContext(context, FILE_NAME, gson.toJson(rootObject));
+    }
+
+    public static List<MonSuiviAlimentaire.SuiviJournalier> getSuivisFromJson(Context context) {
+        Gson gson = new Gson();
+        List<MonSuiviAlimentaire.SuiviJournalier> suivis = new ArrayList<>();
+
+        String jsonString = "";
+        try (InputStream inputStream = context.openFileInput(FILE_NAME)) {
+            byte[] data = new byte[inputStream.available()];
+            inputStream.read(data);
+            jsonString = new String(data, StandardCharsets.UTF_8);
+        } catch (IOException e) {
+            // Retourne liste vide si fichier non trouvé
+            return suivis;
+        }
+
+        JsonObject rootObject = gson.fromJson(jsonString, JsonObject.class);
+        if (rootObject != null && rootObject.has("suivis")) {
+            JsonArray suivisArray = rootObject.getAsJsonArray("suivis");
+            for (JsonElement element : suivisArray) {
+                MonSuiviAlimentaire.SuiviJournalier suivi = gson.fromJson(element, MonSuiviAlimentaire.SuiviJournalier.class);
+                suivis.add(suivi);
+            }
+        }
+
+        return suivis;
+    }
+    private static String readFileFromContext(Context context, String fileName) {
+        String jsonString = "{}";  // Initialisation par défaut
+
+        try (InputStream inputStream = context.openFileInput(fileName)) {
+            byte[] data = new byte[inputStream.available()];
+            inputStream.read(data);
+            jsonString = new String(data, StandardCharsets.UTF_8);
+        } catch (IOException e) {
+            e.printStackTrace();  // Pour débogage
+        }
+
+        return jsonString;
+    }
+    private static void writeFileToContext(Context context, String fileName, String jsonData) {
+        try (FileOutputStream fos = context.openFileOutput(fileName, Context.MODE_PRIVATE);
+             OutputStreamWriter writer = new OutputStreamWriter(fos, StandardCharsets.UTF_8)) {
+            writer.write(jsonData);
+        } catch (IOException e) {
+            throw new RuntimeException("Erreur lors de l'écriture du fichier " + fileName, e);
+        }
+    }
+
+
+
 }

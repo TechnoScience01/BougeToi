@@ -1,37 +1,40 @@
 package com.example.bougetoi;
 
+import android.annotation.SuppressLint;
+import android.os.Build;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
-import android.widget.Button;
-import android.widget.EditText;
-import android.widget.Spinner;
-import android.widget.TableLayout;
-import android.widget.TableRow;
-import android.widget.TextView;
-import android.widget.ProgressBar;
-import androidx.appcompat.app.AlertDialog;
+import android.widget.*;
 import androidx.activity.EdgeToEdge;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
-import android.content.Intent;
-
 import com.example.bougetoi.databinding.ActivityMonSuiviAlimentaireBinding;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 
-public class MonSuiviAlimentaire extends AppCompatActivity implements View.OnClickListener {
+import java.io.File;
+import java.io.FileWriter;
+import java.nio.file.Files;
+import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+
+
+
+public class MonSuiviAlimentaire extends AppCompatActivity {
 
     private TableLayout tableLayout;
-    private TextView actuellesCalories;
-    private ProgressBar progressBar;
     private String[] aliments;
     private double[] caloriesParGramme;
     private double[] poidsParUnite;
-
     private ActivityMonSuiviAlimentaireBinding binding;
+    private String selectedDate;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -39,26 +42,57 @@ public class MonSuiviAlimentaire extends AppCompatActivity implements View.OnCli
 
         binding = ActivityMonSuiviAlimentaireBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
+        // Set click listeners
+        binding.backArrow.setOnClickListener(v -> finish());
+        binding.AjoutAliment.setOnClickListener(v -> popupAjoutAliments());
+        binding.btnVoirMacronutrients.setOnClickListener(v -> popupMacronutriments());
 
-        binding.toolbar.setOnClickListener(this);
+        DatePicker datePicker = findViewById(R.id.datePicker);
+        LocalDate today = LocalDate.now();
+        datePicker.updateDate(today.getYear(), today.getMonthValue() - 1, today.getDayOfMonth());
+        selectedDate = today.toString();
+
+        datePicker.init(
+                datePicker.getYear(),
+                datePicker.getMonth(),
+                datePicker.getDayOfMonth(),
+                (view, year, monthOfYear, dayOfMonth) -> {
+                    selectedDate = String.format("%04d-%02d-%02d", year, monthOfYear + 1, dayOfMonth); // ✅ ICI
+                    afficherSuiviPourDate(selectedDate);
+                }
+        );
+
 
         EdgeToEdge.enable(this);
-        setContentView(R.layout.activity_mon_suivi_alimentaire);
-        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
+        ViewCompat.setOnApplyWindowInsetsListener(binding.getRoot(), (v, insets) -> {
             Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
             return insets;
         });
 
-        tableLayout = findViewById(R.id.tableLayout);
-        Button addButton = findViewById(R.id.button);
-        actuellesCalories = findViewById(R.id.actuellesCalories);
-        progressBar = findViewById(R.id.progressBar);
+        // Initialisation de la table
+        tableLayout = binding.tableLayout;
+
+        // Chargement des données sauvegardées
+        List<SuiviJournalier> suivis = JsonReader.getSuivisFromJson(this);
+        String dateDuJour = java.time.LocalDate.now().toString(); // API >= 26
+
+        for (SuiviJournalier suivi : suivis) {
+            if (suivi.date.equals(dateDuJour)) {
+                restaurerSuivi(suivi);
+                break;
+            }
+        }
 
         // Chargement des données depuis strings.xml
         aliments = getResources().getStringArray(R.array.aliments);
         String[] caloriesStr = getResources().getStringArray(R.array.calories_par_gramme);
         String[] poidsStr = getResources().getStringArray(R.array.poids_par_unite);
+
+        // Validation des longueurs des tableaux
+        if (aliments.length != caloriesStr.length || aliments.length != poidsStr.length) {
+            throw new IllegalStateException("nombre d'item dans les tableaux différents");
+        }
 
         // Conversion des chaînes en doubles
         caloriesParGramme = new double[caloriesStr.length];
@@ -69,54 +103,24 @@ public class MonSuiviAlimentaire extends AppCompatActivity implements View.OnCli
         }
 
         // Initialise le texte des calories actuelles et la barre de progression
-        if (actuellesCalories != null) {
-            actuellesCalories.setText("0");
-        }
-        if (progressBar != null) {
-            double caloriesMax = 2000; // Valeur maximale pour la ProgressBar
-            progressBar.setMax((int) caloriesMax);
-            progressBar.setProgress(0); // Initialisé à 0
-        }
-
-        addButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                showAddFoodDialog();
-            }
-        });
-
-        addButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                showAddFoodDialog();
-            }
-        });
-
-        // Ajout du gestionnaire pour le bouton Voir_macronutriments
-        Button btnMacronutriments = findViewById(R.id.Voir_macronutriments);
-        if (btnMacronutriments != null) {
-            btnMacronutriments.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    showMacronutrimentsDialog();
-                }
-            });
-        }
-
+        binding.actuellesCalories.setText("0");
+        double caloriesMax = 2000; // TODO: Make configurable
+        binding.progressBar.setMax((int) caloriesMax);
+        binding.progressBar.setProgress(0);
 
 
     }
 
-    private void showAddFoodDialog() {
+    private void popupAjoutAliments() {
         LayoutInflater inflater = this.getLayoutInflater();
-        View dialogView = inflater.inflate(R.layout.popup_ajout_aliment, null);
+        View popupAjout = inflater.inflate(R.layout.popup_ajout_aliment, null);
 
-        Spinner spinnerAliment = dialogView.findViewById(R.id.spinnerAliment);
-        EditText editTextQuantite = dialogView.findViewById(R.id.editTextQuantite);
-        Spinner spinnerUnite = dialogView.findViewById(R.id.spinnerUnite);
-        TextView textViewCalories = dialogView.findViewById(R.id.textViewCalories);
+        Spinner spinnerAliment = popupAjout.findViewById(R.id.spinnerAliment);
+        EditText editTextQuantite = popupAjout.findViewById(R.id.editTextQuantite);
+        Spinner spinnerUnite = popupAjout.findViewById(R.id.spinnerUnite);
+        TextView textViewCalories = popupAjout.findViewById(R.id.textViewCalories);
 
-        // Liste des aliments depuis strings.xml
+        // Liste des aliments écrit dans strings xml
         ArrayAdapter<String> alimentAdapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, aliments);
         alimentAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         spinnerAliment.setAdapter(alimentAdapter);
@@ -128,7 +132,8 @@ public class MonSuiviAlimentaire extends AppCompatActivity implements View.OnCli
         spinnerUnite.setAdapter(uniteAdapter);
 
         // Calcule les calories en temps réel
-        AdapterView.OnItemSelectedListener calorieUpdater = new AdapterView.OnItemSelectedListener() {
+        AdapterView.OnItemSelectedListener updateCalories = new AdapterView.OnItemSelectedListener() {
+
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                 updateCalories(spinnerAliment, editTextQuantite, spinnerUnite, textViewCalories);
@@ -137,8 +142,8 @@ public class MonSuiviAlimentaire extends AppCompatActivity implements View.OnCli
             @Override
             public void onNothingSelected(AdapterView<?> parent) {}
         };
-        spinnerAliment.setOnItemSelectedListener(calorieUpdater);
-        spinnerUnite.setOnItemSelectedListener(calorieUpdater);
+        spinnerAliment.setOnItemSelectedListener(updateCalories);
+        spinnerUnite.setOnItemSelectedListener(updateCalories);
         editTextQuantite.addTextChangedListener(new android.text.TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
@@ -151,25 +156,24 @@ public class MonSuiviAlimentaire extends AppCompatActivity implements View.OnCli
         });
 
         // Crée la boîte de dialogue
-
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setView(dialogView);
+        builder.setView(popupAjout);
         builder.setPositiveButton("Ajouter", (dialog, which) -> {
             int alimentIndex = spinnerAliment.getSelectedItemPosition();
             String aliment = aliments[alimentIndex];
             String quantite = editTextQuantite.getText().toString().trim();
             String unite = spinnerUnite.getSelectedItem().toString();
             if (!quantite.isEmpty()) {
-                String calories = calculateCalories(alimentIndex, quantite, unite);
-                addTableRow(aliment, quantite + " " + unite, calories);
+                String calories = calculerCalories(alimentIndex, quantite, unite);
+                ajoutLigneAliments(aliment, quantite + " " + unite, calories);
             }
         });
         builder.setNegativeButton("Annuler", (dialog, which) -> dialog.dismiss());
 
         AlertDialog dialog = builder.create();
         dialog.show();
-
     }
+
 
     private void updateCalories(Spinner spinnerAliment, EditText editTextQuantite, Spinner spinnerUnite, TextView textViewCalories) {
         int alimentIndex = spinnerAliment.getSelectedItemPosition();
@@ -177,14 +181,15 @@ public class MonSuiviAlimentaire extends AppCompatActivity implements View.OnCli
         String unite = spinnerUnite.getSelectedItem().toString();
 
         if (!quantiteStr.isEmpty()) {
-            String calories = calculateCalories(alimentIndex, quantiteStr, unite);
+            String calories = calculerCalories(alimentIndex, quantiteStr, unite);
             textViewCalories.setText("Calories : " + calories);
         } else {
             textViewCalories.setText("Calories : 0");
         }
     }
 
-    private String calculateCalories(int alimentIndex, String quantiteStr, String unite) {
+    @SuppressLint("DefaultLocale")
+    private String calculerCalories(int alimentIndex, String quantiteStr, String unite) {
         double quantite;
         try {
             quantite = Double.parseDouble(quantiteStr);
@@ -218,7 +223,7 @@ public class MonSuiviAlimentaire extends AppCompatActivity implements View.OnCli
         return String.format("%.0f", calories); // Arrondi à l'entier
     }
 
-    private void addTableRow(String aliment, String quantite, String calories) {
+    private void ajoutLigneAliments(String aliment, String quantite, String calories) {
         TableRow tableRow = new TableRow(this);
 
         TextView alimentTextView = new TextView(this);
@@ -240,49 +245,52 @@ public class MonSuiviAlimentaire extends AppCompatActivity implements View.OnCli
         Button deleteButton = new Button(this);
         deleteButton.setText("X");
         deleteButton.setLayoutParams(new TableRow.LayoutParams(TableRow.LayoutParams.WRAP_CONTENT, TableRow.LayoutParams.WRAP_CONTENT));
-        deleteButton.setPadding(8, 0, 8, 0); // Réduit la taille du bouton
-        deleteButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                new AlertDialog.Builder(MonSuiviAlimentaire.this)
-                        .setTitle("Supprimer")
-                        .setMessage("Voulez-vous supprimer cet aliment ?")
-                        .setPositiveButton("Oui", (dialog, which) -> {
-                            tableLayout.removeView(tableRow);
-                            updateTotalAndProgress();
-                        })
-                        .setNegativeButton("Non", null)
-                        .show();
-            }
-        });
+        deleteButton.setPadding(0, 0, 4, 0);
+
+
+        deleteButton.setOnClickListener(v -> new AlertDialog.Builder(MonSuiviAlimentaire.this)
+                .setTitle("Supprimer")
+                .setMessage("Voulez-vous supprimer cet aliment ?")
+                .setPositiveButton("Oui", (dialog, which) -> {
+                    tableLayout.removeView(tableRow);
+                    updateTotalCalories();
+                    // Recalculer et sauvegarder
+                    SuiviJournalier suivi = construireSuiviJournalier();
+                    JsonReader.saveSuiviToJson(this, suivi);
+
+
+                })
+                .setNegativeButton("Non", null)
+                .show());
         tableRow.addView(deleteButton);
 
         tableLayout.addView(tableRow);
         tableLayout.requestLayout();
 
         // Met à jour le total et la ProgressBar
-        updateTotalAndProgress();
+        updateTotalCalories();
+
+        // Sauvegarde des données
+        SuiviJournalier suivi = construireSuiviJournalier();
+        JsonReader.saveSuiviToJson(this, suivi);
+
+
     }
 
-    private void updateTotalAndProgress() {
-        if (actuellesCalories != null) {
-            Double totalCalories = calculNbCaloriesTotales();
-            actuellesCalories.setText(totalCalories.toString());
-        }
-        if (progressBar != null) {
-            double totalCalories = calculNbCaloriesTotales();
-            double caloriesMax = 2000; // Valeur maximale pour la ProgressBar
-            progressBar.setMax((int) caloriesMax);
-            progressBar.setProgress((int) totalCalories);
-        }
+    @SuppressLint("DefaultLocale")
+    private void updateTotalCalories() {
+        double totalCalories = calculNbCaloriesTotales();
+        binding.actuellesCalories.setText(String.format("%.0f", totalCalories));
+        double caloriesMax = 2000; // TODO: Make configurable
+        binding.progressBar.setMax((int) caloriesMax);
+        binding.progressBar.setProgress((int) totalCalories);
     }
 
-    private Double calculNbCaloriesTotales() {
+    private double calculNbCaloriesTotales() {
         double totalCalories = 0.0;
-        // Commence à 1 pour ignorer la ligne d'en-tête
-        for (int i = 1; i < tableLayout.getChildCount(); i++) {
+        for (int i = 0; i < tableLayout.getChildCount(); i++) {
             TableRow row = (TableRow) tableLayout.getChildAt(i);
-            TextView caloriesTextView = (TextView) row.getChildAt(2); // Colonne des calories
+            TextView caloriesTextView = (TextView) row.getChildAt(2);
             String caloriesStr = caloriesTextView.getText().toString();
             if (!caloriesStr.isEmpty()) {
                 try {
@@ -295,27 +303,23 @@ public class MonSuiviAlimentaire extends AppCompatActivity implements View.OnCli
         return totalCalories;
     }
 
-    private void showMacronutrimentsDialog() {
-        // Calculer les macronutriments en fonction des aliments ajoutés
+
+    private void popupMacronutriments() {
         double totalCalories = calculNbCaloriesTotales();
-        // Ces valeurs sont approximatives, vous devriez ajuster selon votre application
-        double totalProtein = totalCalories * 0.25 / 4; // 25% des calories, 4 calories par gramme
-        double totalCarbs = totalCalories * 0.50 / 4;   // 50% des calories, 4 calories par gramme
-        double totalFat = totalCalories * 0.25 / 9;     // 25% des calories, 9 calories par gramme
+        double totalProteines = totalCalories * 0.25 / 4; // 25% des calories, 4 calories par gramme
+        double totalGlucides = totalCalories * 0.50 / 4;   // 50% des calories, 4 calories par gramme
+        double totalLipides = totalCalories * 0.25 / 9;     // 25% des calories, 9 calories par gramme
 
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setTitle("Macronutriments");
 
-        // Créer une vue pour le dialogue
-        LayoutInflater inflater = this.getLayoutInflater();
-        View dialogView = inflater.inflate(android.R.layout.simple_list_item_1, null);
         TextView textView = new TextView(this);
         textView.setPadding(20, 20, 20, 20);
         textView.setText(
                 "Calories totales: " + String.format("%.0f", totalCalories) + " kcal\n" +
-                        "Protéines: " + String.format("%.1f", totalProtein) + " g\n" +
-                        "Glucides: " + String.format("%.1f", totalCarbs) + " g\n" +
-                        "Lipides: " + String.format("%.1f", totalFat) + " g"
+                        "Protéines: " + String.format("%.1f", totalProteines) + " g\n" +
+                        "Glucides: " + String.format("%.1f", totalGlucides) + " g\n" +
+                        "Lipides: " + String.format("%.1f", totalLipides) + " g"
         );
 
         builder.setView(textView);
@@ -325,12 +329,81 @@ public class MonSuiviAlimentaire extends AppCompatActivity implements View.OnCli
         dialog.show();
     }
 
-    @Override
-    public void onClick(View view) {
-        int id = view.getId();
-        if (id == R.id.toolbar) {
-            // Terminer cette activité pour revenir en arrière
-            finish();
+    //PArtie sauvegarde
+
+    public static class SuiviJournalier {
+        String date; // format AAAA-MM-JJ
+        List<AlimentConsomme> aliments = new ArrayList<>();
+
+        public static class AlimentConsomme {
+            String nom;
+            String quantite;
+            String calories;
+
+            public AlimentConsomme(String nom, String quantite, String calories) {
+                this.nom = nom;
+                this.quantite = quantite;
+                this.calories = calories;
+            }
         }
     }
+
+    private SuiviJournalier construireSuiviJournalier() {
+        SuiviJournalier suivi = new SuiviJournalier();
+        suivi.date = selectedDate;
+
+        for (int i = 1; i < tableLayout.getChildCount(); i++) {
+            TableRow row = (TableRow) tableLayout.getChildAt(i);
+            if (row.getChildCount() < 3) continue;
+
+            TextView tvAliment = (TextView) row.getChildAt(0);
+            TextView tvQuantite = (TextView) row.getChildAt(1);
+            TextView tvCalories = (TextView) row.getChildAt(2);
+
+            SuiviJournalier.AlimentConsomme aliment = new SuiviJournalier.AlimentConsomme(
+                    tvAliment.getText().toString(),
+                    tvQuantite.getText().toString(),
+                    tvCalories.getText().toString()
+            );
+            suivi.aliments.add(aliment);
+        }
+
+        return suivi;
+    }
+
+
+    private void restaurerSuivi(SuiviJournalier suivi) {
+        // Supprime toutes les lignes sauf l'en-tête
+        tableLayout.removeViews(1, tableLayout.getChildCount() - 1);
+
+        for (SuiviJournalier.AlimentConsomme aliment : suivi.aliments) {
+            ajoutLigneAliments(aliment.nom, aliment.quantite, aliment.calories);
+        }
+    }
+
+    private void afficherSuiviPourDate(String date) {
+        List<SuiviJournalier> suivis = JsonReader.getSuivisFromJson(this);
+
+        for (SuiviJournalier suivi : suivis) {
+            if (suivi.date != null && suivi.date.equals(date)) {
+                // Nettoie la table actuelle (garde l'en-tête)
+                tableLayout.removeViews(1, tableLayout.getChildCount() - 1);
+                // Affiche les aliments du jour sélectionné
+                for (SuiviJournalier.AlimentConsomme aliment : suivi.aliments) {
+                    ajoutLigneAliments(aliment.nom, aliment.quantite, aliment.calories);
+                }
+                updateTotalCalories();
+                return;
+            }
+        }
+
+        // Si aucun suivi trouvé
+        Toast.makeText(this, "Aucun suivi trouvé pour cette date", Toast.LENGTH_SHORT).show();
+        tableLayout.removeViews(1, tableLayout.getChildCount() - 1);
+        updateTotalCalories();
+    }
+
+
+
+
 }
