@@ -55,7 +55,10 @@ public class AffichageSeance extends AppCompatActivity {
             builder.setMessage(seancesText.toString());
         }
 
-        builder.setPositiveButton("OK", (dialog, which) -> dialog.dismiss());
+        builder.setPositiveButton("OK", (dialog, which) -> {
+            dialog.dismiss();
+            finish();
+        });
         builder.create().show();
     }
 

@@ -27,8 +27,8 @@ public class PageDAccueil extends AppCompatActivity {
             public void onClick(View v) {
                 Toast.makeText(PageDAccueil.this, "Mes informations", Toast.LENGTH_SHORT).show();
                 // Navigation à implémenter
-                // Intent intent = new Intent(PageDAccueil.this, MesInformations.class);
-                // startActivity(intent);
+                 Intent intent = new Intent(PageDAccueil.this, MesInformations.class);
+                 startActivity(intent);
             }
         });
 

@@ -13,6 +13,9 @@
             android:theme="@style/Theme.BougeToi"
             tools:targetApi="31">
         <activity
+                android:name=".MesInformations"
+                android:exported="false"/>
+        <activity
                 android:name=".resume_macronutriments"
                 android:exported="false"/>
         <activity
@@ -21,11 +24,10 @@
         <activity
                 android:name=".MonSuiviAlimentaire"
                 android:exported="false">
-       </activity>
+        </activity>
         <activity
                 android:name=".SuiviMorpho"
                 android:exported="false">
-
         </activity>
         <activity
                 android:name=".PageDAccueil"
@@ -48,7 +50,6 @@
         <activity
                 android:name=".MesSeances"
                 android:exported="false">
-
         </activity>
     </application>
 
