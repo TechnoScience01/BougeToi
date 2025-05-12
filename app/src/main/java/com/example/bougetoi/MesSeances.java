@@ -33,7 +33,6 @@ public class MesSeances extends AppCompatActivity implements View.OnClickListene
         binding.butexercices.setOnClickListener(this);
         binding.backArrow.setOnClickListener(this);
 
-        // Enregistrer le launcher pour récupérer les résultats
         ajoutSeanceLauncher = registerForActivityResult(
                 new ActivityResultContracts.StartActivityForResult(),
                 result -> {
@@ -43,12 +42,10 @@ public class MesSeances extends AppCompatActivity implements View.OnClickListene
                         String dateSeance = data.getStringExtra("DATE_SEANCE");
                         long dateTimestamp = data.getLongExtra("DATE_TIMESTAMP", 0);
 
-                        // Sélectionner la date dans le calendrier
                         if (dateTimestamp > 0) {
                             binding.calendarView.setDate(dateTimestamp);
                         }
 
-                        // Afficher un toast avec les informations de la séance
                         Toast.makeText(this,
                                 "Séance " + nomSeance + " ajoutée pour le " + dateSeance,
                                 Toast.LENGTH_SHORT).show();
@@ -65,12 +62,9 @@ public class MesSeances extends AppCompatActivity implements View.OnClickListene
                 }
         );
 
-        // Configurer le CalendarView
         binding.calendarView.setOnDateChangeListener((view, year, month, dayOfMonth) -> {
-            // Formater la date sélectionnée
             String selectedDate = String.format("%02d/%02d/%d", dayOfMonth, month + 1, year);
 
-            // Lancer l'activité AffichageSeance avec la date sélectionnée
             Intent intent = new Intent(MesSeances.this, AffichageSeance.class);
             intent.putExtra("SELECTED_DATE", selectedDate);
             startActivity(intent);
@@ -106,7 +100,6 @@ public class MesSeances extends AppCompatActivity implements View.OnClickListene
                 seances = gson.fromJson(seancesArray, new TypeToken<List<Seance>>() {}.getType());
             }
         } catch (Exception e) {
-            // Retourne une liste vide si le fichier n'existe pas ou en cas d'erreur
         }
 
         return seances;

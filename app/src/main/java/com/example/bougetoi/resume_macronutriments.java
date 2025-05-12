@@ -19,7 +19,6 @@ public class resume_macronutriments extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_resume_macronutriments);
 
-        // Récupérer les données transmises
         String alimentsStr = getIntent().getStringExtra("aliments");
         String proteinesStr = getIntent().getStringExtra("proteines");
         String glucidesStr = getIntent().getStringExtra("glucides");
@@ -30,7 +29,6 @@ public class resume_macronutriments extends AppCompatActivity {
         glucidesParGramme = (glucidesStr != null) ? convertToDoubleArray(glucidesStr.split(",")) : new double[0];
         lipidesParGramme = (lipidesStr != null) ? convertToDoubleArray(lipidesStr.split(",")) : new double[0];
 
-        // Ajouter les données au tableau
         TableLayout tableLayout = findViewById(R.id.tableLayout);
         for (int i = 0; i < aliments.length; i++) {
             TableRow row = new TableRow(this);

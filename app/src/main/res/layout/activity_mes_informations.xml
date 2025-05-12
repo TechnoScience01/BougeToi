@@ -116,6 +116,7 @@
             app:layout_constraintTop_toBottomOf="@id/performanceGoalInput"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
+            android:inputType="numberDecimal"
             android:layout_margin="16dp"
             android:layout_marginTop="52dp"/>
 
@@ -124,6 +125,7 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:hint="Taille (cm)"
+            android:inputType="numberDecimal"
             app:layout_constraintTop_toBottomOf="@id/ObjPoids"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
@@ -135,6 +137,7 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:hint="Objectif calorique par jour"
+            android:inputType="numberDecimal"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             android:layout_margin="16dp"

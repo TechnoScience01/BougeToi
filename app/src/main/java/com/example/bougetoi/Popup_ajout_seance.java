@@ -36,12 +36,10 @@ public class Popup_ajout_seance extends AppCompatActivity implements View.OnClic
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_popup_ajout_seance);
 
-        // Initialiser le calendrier et le format de date
         calendar = Calendar.getInstance();
         dateFormat = new SimpleDateFormat("dd/MM/yyyy", Locale.FRANCE);
         chosenDate = calendar.getTime();
 
-        // Initialiser tous les éléments du layout
         initializeViews();
         setupSpinner();
         setupButtons();
@@ -51,7 +49,6 @@ public class Popup_ajout_seance extends AppCompatActivity implements View.OnClic
     private void setupSpinner() {
         Spinner spinner = findViewById(R.id.seanceTypeSpinner);
 
-        // Créer l'adapter pour le spinner
         ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this,
                 R.array.seance_types, android.R.layout.simple_spinner_item);
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
@@ -62,7 +59,6 @@ public class Popup_ajout_seance extends AppCompatActivity implements View.OnClic
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                 String selectedType = parent.getItemAtPosition(position).toString();
 
-                // Réinitialiser les exercices
                 exercisesContainer.removeAllViews();
                 selectedExercisesList.clear();
                 updateSelectedExercisesText();
@@ -88,7 +84,6 @@ public class Popup_ajout_seance extends AppCompatActivity implements View.OnClic
     }
 
     private void initializeViews() {
-        // Récupérer les références aux vues
         exercisesContainer = findViewById(R.id.exercisesContainer);
         exercisesScrollView = findViewById(R.id.exercisesScrollView);
         exercisesHeader = findViewById(R.id.exercisesHeader);
@@ -101,22 +96,17 @@ public class Popup_ajout_seance extends AppCompatActivity implements View.OnClic
     }
 
     private void setupDatePicker() {
-        // Afficher la date actuelle
         selectedDate.setText(dateFormat.format(calendar.getTime()));
 
-        // Rendre le TextView cliquable
         selectedDate.setOnClickListener(v -> {
-            // Créer un DatePickerDialog
             DatePickerDialog datePickerDialog = new DatePickerDialog(
                     this,
                     (view, year, month, dayOfMonth) -> {
-                        // Mettre à jour le calendrier
                         calendar.set(Calendar.YEAR, year);
                         calendar.set(Calendar.MONTH, month);
                         calendar.set(Calendar.DAY_OF_MONTH, dayOfMonth);
                         chosenDate = calendar.getTime();
 
-                        // Mettre à jour l'affichage
                         selectedDate.setText(dateFormat.format(chosenDate));
                     },
                     calendar.get(Calendar.YEAR),
@@ -132,19 +122,16 @@ public class Popup_ajout_seance extends AppCompatActivity implements View.OnClic
         Button annulerButton = findViewById(R.id.annulerButton);
 
         confirmerButton.setOnClickListener(v -> {
-            // Récupérer les données de la séance
             String nomSeance = ((EditText) findViewById(R.id.nomSeance)).getText().toString();
             String dureeStr = ((EditText) findViewById(R.id.dureeSeance)).getText().toString();
             String description = ((EditText) findViewById(R.id.descriptionSeance)).getText().toString();
             String typeSeance = ((Spinner) findViewById(R.id.seanceTypeSpinner)).getSelectedItem().toString();
 
-            // Validation des champs obligatoires
             if (nomSeance.isEmpty()) {
                 Toast.makeText(this, "Veuillez saisir un nom pour la séance", Toast.LENGTH_SHORT).show();
                 return;
             }
 
-            // Créer une nouvelle séance
             Seance seance = new Seance(
                     nomSeance,
                     dateFormat.format(chosenDate),
@@ -154,10 +141,8 @@ public class Popup_ajout_seance extends AppCompatActivity implements View.OnClic
                     selectedExercisesList
             );
 
-            // Sauvegarder la séance dans le fichier JSON
             JsonReader.saveSeanceToJson(this, seance);
 
-            // Créer l'intent de retour avec les données
             Intent resultIntent = new Intent();
             resultIntent.putExtra("NOM_SEANCE", nomSeance);
             resultIntent.putExtra("DATE_SEANCE", dateFormat.format(chosenDate));
@@ -169,7 +154,6 @@ public class Popup_ajout_seance extends AppCompatActivity implements View.OnClic
             resultIntent.putExtra("TYPE_SEANCE", typeSeance);
             resultIntent.putExtra("EXERCICES", selectedExercisesList.toArray(new String[0]));
 
-            // Définir le résultat et terminer
             setResult(RESULT_OK, resultIntent);
             Toast.makeText(this, "Séance ajoutée", Toast.LENGTH_SHORT).show();
             finish();
@@ -177,7 +161,6 @@ public class Popup_ajout_seance extends AppCompatActivity implements View.OnClic
 
         annulerButton.setOnClickListener(v -> finish());
 
-        // Le reste du code de setupButtons reste inchangé...
         confirmExercisesButton.setOnClickListener(v -> {
             selectedExercisesList.clear();
             for (int i = 0; i < exercisesContainer.getChildCount(); i++) {
@@ -194,7 +177,6 @@ public class Popup_ajout_seance extends AppCompatActivity implements View.OnClic
         });
 
         cancelExercisesButton.setOnClickListener(v -> {
-            // Désélectionner tous les exercices
             for (int i = 0; i < exercisesContainer.getChildCount(); i++) {
                 View child = exercisesContainer.getChildAt(i);
                 if (child instanceof CheckBox) {
@@ -206,12 +188,10 @@ public class Popup_ajout_seance extends AppCompatActivity implements View.OnClic
             showExercisesViews(false);
         });
 
-        // Rendre les textes d'exercices cliquables pour les modifier
         View.OnClickListener exerciseTextClickListener = v -> {
             String selectedType = ((Spinner) findViewById(R.id.seanceTypeSpinner)).getSelectedItem().toString();
             showExercisesViews(true);
 
-            // Cocher les exercices déjà sélectionnés
             for (int i = 0; i < exercisesContainer.getChildCount(); i++) {
                 View child = exercisesContainer.getChildAt(i);
                 if (child instanceof CheckBox) {
@@ -234,12 +214,10 @@ public class Popup_ajout_seance extends AppCompatActivity implements View.OnClic
 
         selectedExercisesText1.setVisibility(View.VISIBLE);
 
-        // Diviser la liste si elle est trop longue
         if (selectedExercisesList.size() <= 3) {
             selectedExercisesText1.setText(String.join(", ", selectedExercisesList));
             selectedExercisesText2.setVisibility(View.GONE);
         } else {
-            // Première moitié dans text1, seconde dans text2
             int middle = selectedExercisesList.size() / 2;
             List<String> firstHalf = selectedExercisesList.subList(0, middle);
             List<String> secondHalf = selectedExercisesList.subList(middle, selectedExercisesList.size());
@@ -249,36 +227,30 @@ public class Popup_ajout_seance extends AppCompatActivity implements View.OnClic
             selectedExercisesText2.setVisibility(View.VISIBLE);
         }
 
-        // Ajouter un texte indicatif pour informer que c'est cliquable
         if (!selectedExercisesList.isEmpty()) {
             selectedExercisesText1.setText(selectedExercisesText1.getText() + " (Cliquer pour modifier)");
         }
     }
 
     private void addExercises(LinearLayout container, String[] exercises) {
-        // D'abord vider le conteneur pour éviter les doublons
         container.removeAllViews();
 
         for (String exercise : exercises) {
             CheckBox checkBox = new CheckBox(this);
             checkBox.setText(exercise);
 
-            // Améliorer l'apparence et le toucher des checkboxes
             LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(
                     LinearLayout.LayoutParams.MATCH_PARENT,
                     LinearLayout.LayoutParams.WRAP_CONTENT);
             params.setMargins(0, 12, 0, 12); // ajouter des marges pour rendre les cases plus grandes
             checkBox.setLayoutParams(params);
 
-            // Augmenter la taille du texte pour une meilleure lisibilité
             checkBox.setTextSize(16);
-            // Ajouter du padding pour agrandir la zone de toucher
             checkBox.setPadding(8, 16, 8, 16);
 
             container.addView(checkBox);
         }
 
-        // Demander un rafraîchissement du layout
         container.requestLayout();
     }
 
@@ -289,13 +261,10 @@ public class Popup_ajout_seance extends AppCompatActivity implements View.OnClic
         exerciseButtonsLayout.setVisibility(visibility);
 
         if (show) {
-            // Définir une hauteur minimale pour la ScrollView
             ViewGroup.LayoutParams params = exercisesScrollView.getLayoutParams();
-            // Donner à la ScrollView une hauteur fixe pour s'assurer qu'elle prend assez d'espace
-            params.height = 300; // hauteur en pixels (vous pouvez ajuster selon vos besoins)
+            params.height = 300;
             exercisesScrollView.setLayoutParams(params);
 
-            // S'assurer que le LinearLayout à l'intérieur utilise wrap_content
             ViewGroup.LayoutParams containerParams = exercisesContainer.getLayoutParams();
             containerParams.height = ViewGroup.LayoutParams.WRAP_CONTENT;
             exercisesContainer.setLayoutParams(containerParams);
@@ -304,6 +273,5 @@ public class Popup_ajout_seance extends AppCompatActivity implements View.OnClic
 
     @Override
     public void onClick(View view) {
-        // Implémentation vide pour l'interface OnClickListener
     }
 }

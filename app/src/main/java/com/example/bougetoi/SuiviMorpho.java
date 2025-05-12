@@ -50,17 +50,14 @@ public class SuiviMorpho extends AppCompatActivity implements View.OnClickListen
         checkBoxNotifications = findViewById(R.id.CB_Notifications);
         checkBoxNotifications.setOnCheckedChangeListener((buttonView, isChecked) -> {
             if (isChecked) {
-                // Notification immédiate
                 NotificationUtils.sendNotification(this, "N'oubliez pas de rentrer votre poids");
 
-                // Planifie une notification quotidienne
                 NotificationUtils.scheduleDailyNotification(this);
             } else {
                 NotificationUtils.cancelDailyNotification(this);
             }
         });
 
-        //setContentView(R.layout.activity_suivi_morpho);
         spinnerHumeur = findViewById(R.id.spinnerHumeur);
         tvImc = findViewById(R.id.TV_imc);
         binding.flecheRetour.setOnClickListener(this);
@@ -81,7 +78,6 @@ public class SuiviMorpho extends AppCompatActivity implements View.OnClickListen
 
 
 
-        // Saisie du poids
         inputPoids = findViewById(R.id.TI_poids);
         Float dernierPoids = JsonReader.getDernierPoids(this);
         if (dernierPoids != null && dernierPoids > 0) {
@@ -95,13 +91,12 @@ public class SuiviMorpho extends AppCompatActivity implements View.OnClickListen
             tvImc.setText(String.format(Locale.getDefault(), "%.2f", imc));
 
         } else {
-            tvImc.setText("0.0"); // ou "0.0" si tu préfères une valeur par défaut
+            tvImc.setText("0.0");
         }
 
         lineChart = findViewById(R.id.lineChart);
 
         findViewById(R.id.btn_valider_poids).setOnClickListener(v -> updateGraph());
-        // Rafraîchit le graphe quand on sort du champ ou qu'on appuie sur "Entrée"
         inputPoids.setOnFocusChangeListener((v, hasFocus) -> {
             if (!hasFocus) updateGraph();
         });
@@ -111,7 +106,6 @@ public class SuiviMorpho extends AppCompatActivity implements View.OnClickListen
             return false;
         });
 
-        // Spinner humeur
         Spinner spinnerHumeur = findViewById(R.id.spinnerHumeur);
         List<String> humeurs = new ArrayList<>();
         humeurs.add("😊 Bonne humeur");
@@ -123,7 +117,6 @@ public class SuiviMorpho extends AppCompatActivity implements View.OnClickListen
                 this, android.R.layout.simple_spinner_item, humeurs);
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         spinnerHumeur.setAdapter(adapter);
-        // Récupère et sélectionne la dernière humeur
         String humeurSauvegardee = JsonReader.getDerniereHumeur(this);
         if (humeurSauvegardee != null) {
             int position = adapter.getPosition(humeurSauvegardee);
@@ -133,7 +126,6 @@ public class SuiviMorpho extends AppCompatActivity implements View.OnClickListen
         }
 
 
-        // Affichage initial du graphe
         updateGraph();
         TextView objectifPoidsTextView = findViewById(R.id.TV_objectif_Poids);
         float objectifPoids = JsonReader.getObjectifPoids(this);
@@ -152,7 +144,6 @@ public class SuiviMorpho extends AppCompatActivity implements View.OnClickListen
                 if (poidsDuJour > 0) {
                     poidsDispo = true;
 
-                    // Ajout si le poids n'est pas déjà présent
                     List<Float> poidsExistants = JsonReader.getPoidsFromJson(this);
                     if (poidsExistants.isEmpty() || poidsDuJour != poidsExistants.get(0)) {
                         JsonReader.pushPoids(this, poidsDuJour);
@@ -188,13 +179,11 @@ public class SuiviMorpho extends AppCompatActivity implements View.OnClickListen
 
         float[] poidsAffiches = poidsMesures;
 
-        // Inversion de l’ordre pour affichage du plus ancien au plus récent
         float[] poidsInverses = new float[poidsAffiches.length];
         for (int i = 0; i < poidsAffiches.length; i++) {
             poidsInverses[i] = poidsAffiches[poidsAffiches.length - 1 - i];
         }
 
-        // Générer les dates correspondantes dans le même ordre
         SimpleDateFormat sdf = new SimpleDateFormat("dd/MM", Locale.getDefault());
         String[] dates = new String[poidsInverses.length];
 
@@ -262,7 +251,7 @@ public class SuiviMorpho extends AppCompatActivity implements View.OnClickListen
         yAxis.addLimitLine(objectifLine);
 
 
-        lineChart.invalidate(); // Redessine le graphe
+        lineChart.invalidate();
         try {
             float poids = Float.parseFloat(saisie);
             float taille = JsonReader.getTaille(this);
@@ -281,7 +270,6 @@ public class SuiviMorpho extends AppCompatActivity implements View.OnClickListen
     public void onClick(View view) {
         int id = view.getId();
        if (id == R.id.flecheRetour) {
-            // Terminer cette activité pour revenir en arrière
             finish();
         }
     }

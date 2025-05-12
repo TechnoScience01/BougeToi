@@ -80,6 +80,7 @@
                 <com.google.android.material.textfield.TextInputEditText
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
+                        android:inputType="numberDecimal"
                         android:layout_weight="2"
                         android:hint="kg" android:id="@+id/TI_poids"/>
                 <com.google.android.material.button.MaterialButton

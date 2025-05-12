@@ -70,10 +70,8 @@ public class MonSuiviAlimentaire extends AppCompatActivity {
             return insets;
         });
 
-        // Initialisation de la table
         tableLayout = binding.tableLayout;
 
-        // Chargement des données sauvegardées
         List<SuiviJournalier> suivis = JsonReader.getSuivisFromJson(this);
         String dateDuJour = java.time.LocalDate.now().toString(); // API >= 26
 
@@ -84,17 +82,14 @@ public class MonSuiviAlimentaire extends AppCompatActivity {
             }
         }
 
-        // Chargement des données depuis strings.xml
         aliments = getResources().getStringArray(R.array.aliments);
         String[] caloriesStr = getResources().getStringArray(R.array.calories_par_gramme);
         String[] poidsStr = getResources().getStringArray(R.array.poids_par_unite);
 
-        // Validation des longueurs des tableaux
         if (aliments.length != caloriesStr.length || aliments.length != poidsStr.length) {
             throw new IllegalStateException("nombre d'item dans les tableaux différents");
         }
 
-        // Conversion des chaînes en doubles
         caloriesParGramme = new double[caloriesStr.length];
         poidsParUnite = new double[poidsStr.length];
         for (int i = 0; i < caloriesStr.length; i++) {
@@ -102,7 +97,6 @@ public class MonSuiviAlimentaire extends AppCompatActivity {
             poidsParUnite[i] = Double.parseDouble(poidsStr[i]);
         }
 
-        // Initialise le texte des calories actuelles et la barre de progression
         float objectifCalorique = JsonReader.getObjectifCalorique(this);
         binding.objectifCalories.setText(String.format("%.0f", objectifCalorique));
         String texteObjectif = " / "+String.format("%.0f", objectifCalorique);
@@ -126,18 +120,15 @@ public class MonSuiviAlimentaire extends AppCompatActivity {
         Spinner spinnerUnite = popupAjout.findViewById(R.id.spinnerUnite);
         TextView textViewCalories = popupAjout.findViewById(R.id.textViewCalories);
 
-        // Liste des aliments écrit dans strings xml
         ArrayAdapter<String> alimentAdapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, aliments);
         alimentAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         spinnerAliment.setAdapter(alimentAdapter);
 
-        // Liste des unités
         String[] unites = {"g", "kg", "mL", "L", "Unité"};
         ArrayAdapter<String> uniteAdapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, unites);
         uniteAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         spinnerUnite.setAdapter(uniteAdapter);
 
-        // Calcule les calories en temps réel
         AdapterView.OnItemSelectedListener updateCalories = new AdapterView.OnItemSelectedListener() {
 
             @Override
@@ -161,7 +152,6 @@ public class MonSuiviAlimentaire extends AppCompatActivity {
             }
         });
 
-        // Crée la boîte de dialogue
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setView(popupAjout);
         builder.setPositiveButton("Ajouter", (dialog, which) -> {

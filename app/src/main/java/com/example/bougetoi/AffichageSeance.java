@@ -21,11 +21,9 @@ public class AffichageSeance extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_affichage_seance);
 
-        // Retrieve the selected date from the intent
         Intent intent = getIntent();
         String selectedDate = intent.getStringExtra("SELECTED_DATE");
 
-        // Fetch the sessions for the selected date
         List<Seance> seances = getSeancesFromJson();
         List<Seance> filteredSeances = new ArrayList<>();
         for (Seance seance : seances) {
@@ -34,7 +32,6 @@ public class AffichageSeance extends AppCompatActivity {
             }
         }
 
-        // Display the sessions in a pop-up
         showSeancesPopup(filteredSeances, selectedDate);
 
     }
@@ -76,7 +73,6 @@ public class AffichageSeance extends AppCompatActivity {
                 seances = gson.fromJson(seancesArray, new TypeToken<List<Seance>>() {}.getType());
             }
         } catch (Exception e) {
-            // Return an empty list if the file doesn't exist or an error occurs
         }
 
         return seances;

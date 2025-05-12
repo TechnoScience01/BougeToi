@@ -15,18 +15,15 @@ public class PageDAccueil extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_page_daccueil);
 
-        // Initialisation des cartes
         CardView cardInfo = findViewById(R.id.cardInfo);
         CardView cardNutrition = findViewById(R.id.cardNutrition);
         CardView cardBodyTrack = findViewById(R.id.cardBodyTrack);
         CardView cardWorkouts = findViewById(R.id.cardWorkouts);
 
-        // Configuration des listeners de clic
         cardInfo.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Toast.makeText(PageDAccueil.this, "Mes informations", Toast.LENGTH_SHORT).show();
-                // Navigation à implémenter
                  Intent intent = new Intent(PageDAccueil.this, MesInformations.class);
                  startActivity(intent);
             }
@@ -61,18 +58,15 @@ public class PageDAccueil extends AppCompatActivity {
             }
         });
 
-        // Animation des cartes à l'entrée
         animateCards(cardInfo, cardNutrition, cardBodyTrack, cardWorkouts);
     }
 
     private void animateCards(CardView card1, CardView card2, CardView card3, CardView card4) {
-        // Définir l'état initial (hors écran)
         card1.setAlpha(0f);
         card2.setAlpha(0f);
         card3.setAlpha(0f);
         card4.setAlpha(0f);
 
-        // Animation d'entrée en fondu
         card1.animate().alpha(1f).setDuration(300).setStartDelay(100);
         card2.animate().alpha(1f).setDuration(300).setStartDelay(200);
         card3.animate().alpha(1f).setDuration(300).setStartDelay(300);

@@ -21,11 +21,9 @@ public class Exercices extends AppCompatActivity {
 
         LinearLayout container = findViewById(R.id.exercicesContainer);
 
-        // Configuration du bouton retour
         ImageButton backButton = findViewById(R.id.backArrow);
         backButton.setOnClickListener(v -> finish());
 
-        // Ajout des exercices
         addExerciseCard(container, R.drawable.curlbicepshalteres, "Exercice biceps : Curl haltères");
         addExerciseCard(container, R.drawable.curlbloquagecoude, "Exercice biceps : Curl coude bloqué");
         addExerciseCard(container, R.drawable.barre_au_front, "Exercice triceps : Barre au front");
@@ -57,7 +55,6 @@ public class Exercices extends AppCompatActivity {
         cardView.setCardElevation(4f);
         cardView.setRadius(8f);
 
-        // Layout horizontal pour contenir l'image et le texte
         LinearLayout cardContent = new LinearLayout(this);
         cardContent.setLayoutParams(new LinearLayout.LayoutParams(
                 LinearLayout.LayoutParams.MATCH_PARENT,
@@ -66,7 +63,6 @@ public class Exercices extends AppCompatActivity {
         cardContent.setOrientation(LinearLayout.HORIZONTAL);
         cardContent.setPadding(16, 16, 16, 16);
 
-        // Image de l'exercice
         ImageView imageView = new ImageView(this);
         LinearLayout.LayoutParams imageParams = new LinearLayout.LayoutParams(150, 150);
         imageView.setLayoutParams(imageParams);
@@ -74,7 +70,6 @@ public class Exercices extends AppCompatActivity {
         imageView.setScaleType(ImageView.ScaleType.CENTER_CROP);
         cardContent.addView(imageView);
 
-        // Texte de l'exercice
         TextView textView = new TextView(this);
         LinearLayout.LayoutParams textParams = new LinearLayout.LayoutParams(
                 LinearLayout.LayoutParams.MATCH_PARENT,
@@ -87,25 +82,19 @@ public class Exercices extends AppCompatActivity {
         textView.setGravity(Gravity.CENTER_VERTICAL);
         cardContent.addView(textView);
 
-        // Ajoute le contenu à la carte
         cardView.addView(cardContent);
 
-        // Ajoute la carte au conteneur
         container.addView(cardView);
 
-        // Rendre la carte cliquable
         cardView.setClickable(true);
         cardView.setFocusable(true);
 
-        // Effet de ripple (nécessite un drawable de foreground)
         int[] attrs = new int[] { android.R.attr.selectableItemBackground };
         android.content.res.TypedArray typedArray = obtainStyledAttributes(attrs);
         cardView.setForeground(typedArray.getDrawable(0));
         typedArray.recycle();
 
-        // Gestion du clic sur la carte
         cardView.setOnClickListener(v -> {
-            // TODO: Ajouter la logique pour afficher les détails de l'exercice
         });
     }
 }

@@ -67,7 +67,7 @@ public class JsonReader {
         } catch (Exception e) {
             Log.e("JsonReader", "Erreur lors de la lecture de l'objectif poids", e);
         }
-        return 70f; // valeur par défaut cohérente avec le reste de ton code
+        return 70f;
     }
 
     public static float getTaille(Context context) {
@@ -202,7 +202,6 @@ public class JsonReader {
         return jsonObject != null && jsonObject.has(key);
     }
 
-    // Méthodes utilitaires
     private static String readJsonFile(Context context) {
         try (InputStream inputStream = context.openFileInput(FILE_NAME)) {
             byte[] data = new byte[inputStream.available()];
@@ -231,25 +230,20 @@ public class JsonReader {
         String jsonString = "";
         String FILE_NAME = "bougetoidata.json";
 
-        // Charger le contenu du fichier JSON existant
         jsonString = readFileFromContext(context, FILE_NAME);
 
-        // Convertir le JSON en objet modifiable
         JsonObject rootObject = gson.fromJson(jsonString, JsonObject.class);
         if (rootObject == null) {
             rootObject = new JsonObject();
         }
 
-        // Vérifie ou crée l'objet "suivis"
         JsonArray suivisArray = rootObject.has("suivis") ? rootObject.getAsJsonArray("suivis") : new JsonArray();
 
-        // Vérifier si un suivi pour aujourd'hui existe déjà
         boolean found = false;
         for (JsonElement element : suivisArray) {
             JsonObject obj = element.getAsJsonObject();
             String date = obj.get("date").getAsString();
 
-            // Si la date correspond à aujourd'hui, on met à jour le suivi
             if (date.equals(suivi.date)) {
                 obj.add("aliments", gson.toJsonTree(suivi.aliments));  // Ajouter/mettre à jour les aliments
                 found = true;
@@ -257,16 +251,13 @@ public class JsonReader {
             }
         }
 
-        // Si le suivi pour aujourd'hui n'a pas été trouvé, on l'ajoute à la liste
         if (!found) {
             JsonElement suiviJson = gson.toJsonTree(suivi);
             suivisArray.add(suiviJson);
         }
 
-        // Mettre à jour l'objet JSON avec le tableau "suivis"
         rootObject.add("suivis", suivisArray);
 
-        // Sauvegarder le fichier avec les nouvelles données
         writeFileToContext(context, FILE_NAME, gson.toJson(rootObject));
     }
 
@@ -280,7 +271,6 @@ public class JsonReader {
             inputStream.read(data);
             jsonString = new String(data, StandardCharsets.UTF_8);
         } catch (IOException e) {
-            // Retourne liste vide si fichier non trouvé
             return suivis;
         }
 
@@ -296,14 +286,14 @@ public class JsonReader {
         return suivis;
     }
     private static String readFileFromContext(Context context, String fileName) {
-        String jsonString = "{}";  // Initialisation par défaut
+        String jsonString = "{}";
 
         try (InputStream inputStream = context.openFileInput(fileName)) {
             byte[] data = new byte[inputStream.available()];
             inputStream.read(data);
             jsonString = new String(data, StandardCharsets.UTF_8);
         } catch (IOException e) {
-            e.printStackTrace();  // Pour débogage
+            e.printStackTrace();
         }
 
         return jsonString;
