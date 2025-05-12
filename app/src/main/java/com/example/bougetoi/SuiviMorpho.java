@@ -88,10 +88,12 @@ public class SuiviMorpho extends AppCompatActivity implements View.OnClickListen
             inputPoids.setText(String.format(Locale.getDefault(), "%.1f", dernierPoids));
 
             float taille = JsonReader.getTaille(this);
-            if (taille <= 0f) taille = 1.60f;  // fallback au cas où taille est absente ou invalide
+            if (taille > 10f) taille = taille / 100f;  // conversion cm → m
+            if (taille <= 0f) taille = 1.60f;
 
             float imc = dernierPoids / (taille * taille);
             tvImc.setText(String.format(Locale.getDefault(), "%.2f", imc));
+
         } else {
             tvImc.setText("0.0"); // ou "0.0" si tu préfères une valeur par défaut
         }
@@ -133,6 +135,10 @@ public class SuiviMorpho extends AppCompatActivity implements View.OnClickListen
 
         // Affichage initial du graphe
         updateGraph();
+        TextView objectifPoidsTextView = findViewById(R.id.TV_objectif_Poids);
+        float objectifPoids = JsonReader.getObjectifPoids(this);
+        objectifPoidsTextView.setText(String.format(Locale.getDefault(), "Votre objectif de poids est de : %.1f kg", objectifPoids));
+
     }
 
     private void updateGraph() {
@@ -260,9 +266,12 @@ public class SuiviMorpho extends AppCompatActivity implements View.OnClickListen
         try {
             float poids = Float.parseFloat(saisie);
             float taille = JsonReader.getTaille(this);
+            if (taille > 10f) taille = taille / 100f;
             if (taille <= 0f) taille = 1.60f;
+
             float imc = poids / (taille * taille);
             tvImc.setText(String.format(Locale.getDefault(), "%.2f", imc));
+
         } catch (Exception e) {
             tvImc.setText("0.0");
             Log.w("SuiviMorpho", "Impossible de calculer l'IMC : " + e.getMessage());
