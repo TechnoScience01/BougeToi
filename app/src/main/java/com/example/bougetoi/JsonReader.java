@@ -317,6 +317,27 @@ public class JsonReader {
         }
     }
 
+    public static float getObjectifCalorique(Context context) {
+        String jsonString = readJsonFile(context);
+        try {
+            JsonObject jsonObject = new Gson().fromJson(jsonString, JsonObject.class);
+            if (jsonObject != null && jsonObject.has("infoUser")) {
+                JsonObject infoUser = jsonObject.getAsJsonObject("infoUser");
+                if (infoUser.has("objectif_calorique")) {
+                    JsonElement element = infoUser.get("objectif_calorique");
+
+                    if (element.isJsonPrimitive() && element.getAsJsonPrimitive().isNumber()) {
+                        return element.getAsFloat();  // Renvoie directement la valeur si c'est un nombre
+                    }
+                }
+            }
+        } catch (Exception e) {
+            Log.e("JsonReader", "Erreur lors de la lecture de l'objectif calorique", e);
+        }
+        return 0;
+    }
+
+
 
 
 }

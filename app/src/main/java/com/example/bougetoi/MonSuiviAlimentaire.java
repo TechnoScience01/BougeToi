@@ -103,9 +103,15 @@ public class MonSuiviAlimentaire extends AppCompatActivity {
         }
 
         // Initialise le texte des calories actuelles et la barre de progression
+        float objectifCalorique = JsonReader.getObjectifCalorique(this);
+        binding.objectifCalories.setText(String.format("%.0f", objectifCalorique));
+        String texteObjectif = " / "+String.format("%.0f", objectifCalorique);
+        binding.nbObjectifCalories.setText(texteObjectif);
+
         binding.actuellesCalories.setText("0");
-        double caloriesMax = 2000; // TODO: Make configurable
-        binding.progressBar.setMax((int) caloriesMax);
+
+        binding.progressBar.setMax((int) objectifCalorique);
+
         binding.progressBar.setProgress(0);
 
 
