@@ -4,8 +4,8 @@ import android.graphics.Color;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
-import android.widget.ArrayAdapter;
-import android.widget.Spinner;
+import android.widget.*;
+
 
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -36,14 +36,33 @@ public class SuiviMorpho extends AppCompatActivity implements View.OnClickListen
     private ActivitySuiviMorphoBinding binding;
     private LineChart lineChart;
 
+    private CheckBox checkBoxNotifications;
+    private Spinner spinnerHumeur;
     private float[] poidsMesuresJson = null;
+
+    private TextView tvImc;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
         binding = ActivitySuiviMorphoBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
+
+        checkBoxNotifications = findViewById(R.id.CB_Notifications);
+        checkBoxNotifications.setOnCheckedChangeListener((buttonView, isChecked) -> {
+            if (isChecked) {
+                // Notification immédiate
+                NotificationUtils.sendNotification(this, "N'oubliez pas de rentrer votre poids");
+
+                // Planifie une notification quotidienne
+                NotificationUtils.scheduleDailyNotification(this);
+            } else {
+                NotificationUtils.cancelDailyNotification(this);
+            }
+        });
+
         //setContentView(R.layout.activity_suivi_morpho);
+        spinnerHumeur = findViewById(R.id.spinnerHumeur);
+        tvImc = findViewById(R.id.TV_imc);
         binding.flecheRetour.setOnClickListener(this);
 
         ExecutorService executer = Executors.newSingleThreadExecutor();
@@ -66,6 +85,18 @@ public class SuiviMorpho extends AppCompatActivity implements View.OnClickListen
 
         // Saisie du poids
         inputPoids = findViewById(R.id.TI_poids);
+        Float dernierPoids = JsonReader.getDernierPoids(this);
+        if (dernierPoids != null && dernierPoids > 0) {
+            inputPoids.setText(String.format(Locale.getDefault(), "%.1f", dernierPoids));
+
+            // 👉 Calcule automatiquement l'IMC avec une taille par défaut de 1.60m
+            float taille = 1.60f;
+            float imc = dernierPoids / (taille * taille);
+            tvImc.setText(String.format(Locale.getDefault(), "%.2f", imc));
+        } else {
+            tvImc.setText("0.0"); // ou "0.0" si tu préfères une valeur par défaut
+        }
+
         lineChart = findViewById(R.id.lineChart);
 
         findViewById(R.id.btn_valider_poids).setOnClickListener(v -> updateGraph());
@@ -91,6 +122,15 @@ public class SuiviMorpho extends AppCompatActivity implements View.OnClickListen
                 this, android.R.layout.simple_spinner_item, humeurs);
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         spinnerHumeur.setAdapter(adapter);
+        // Récupère et sélectionne la dernière humeur
+        String humeurSauvegardee = JsonReader.getDerniereHumeur(this);
+        if (humeurSauvegardee != null) {
+            int position = adapter.getPosition(humeurSauvegardee);
+            if (position >= 0) {
+                spinnerHumeur.setSelection(position);
+            }
+        }
+
 
         // Affichage initial du graphe
         updateGraph();
@@ -111,6 +151,11 @@ public class SuiviMorpho extends AppCompatActivity implements View.OnClickListen
                     List<Float> poidsExistants = JsonReader.getPoidsFromJson(this);
                     if (poidsExistants.isEmpty() || poidsDuJour != poidsExistants.get(0)) {
                         JsonReader.pushPoids(this, poidsDuJour);
+                        String humeurDuJour = (String) spinnerHumeur.getSelectedItem();
+                        if (humeurDuJour != null && !humeurDuJour.isEmpty()) {
+                            JsonReader.pushHumeur(this, humeurDuJour);
+                            Log.d("SuiviMorpho", "Humeur ajoutée : " + humeurDuJour);
+                        }
                         Log.d("SuiviMorpho", "Poids ajouté : " + poidsDuJour);
                     } else {
                         Log.d("SuiviMorpho", "Poids déjà présent, pas ajouté.");

@@ -72,7 +72,7 @@ public class JsonReader {
         return seances;
     }
 
-    public static void addPoidsToJson(Context context, float nouveauPoids) {
+    public static void pushHumeur(Context context, String nouvelleHumeur) {
         Gson gson = new GsonBuilder().setPrettyPrinting().create();
         String fileName = "bougetoidata.json";
 
@@ -90,23 +90,71 @@ public class JsonReader {
             jsonObject = new JsonObject();
         }
 
-        JsonArray poidsArray = jsonObject.has("poids") ? jsonObject.getAsJsonArray("poids") : new JsonArray();
+        JsonArray humeurArray = jsonObject.has("humeurs") ? jsonObject.getAsJsonArray("humeurs") : new JsonArray();
 
+        // Crée un nouveau tableau avec la nouvelle humeur en tête
         JsonArray nouveauArray = new JsonArray();
-        nouveauArray.add(nouveauPoids);
-        for (int i = 0; i < poidsArray.size() && i < 29; i++) { // max 30 poids
-            nouveauArray.add(poidsArray.get(i));
+        nouveauArray.add(nouvelleHumeur);
+        for (int i = 0; i < humeurArray.size() && i < 29; i++) {
+            nouveauArray.add(humeurArray.get(i));
         }
 
-        jsonObject.add("poids", nouveauArray);
+        jsonObject.add("humeurs", nouveauArray);
 
         try (FileOutputStream fos = context.openFileOutput(fileName, Context.MODE_PRIVATE);
              OutputStreamWriter writer = new OutputStreamWriter(fos)) {
             writer.write(gson.toJson(jsonObject));
         } catch (IOException e) {
-            throw new RuntimeException("Erreur d'écriture JSON", e);
+            Log.e("JsonReader", "Erreur d’écriture JSON dans pushHumeur", e);
         }
     }
+
+    public static String getDerniereHumeur(Context context) {
+        Gson gson = new Gson();
+        String fileName = "bougetoidata.json";
+
+        try (InputStream inputStream = context.openFileInput(fileName)) {
+            byte[] data = new byte[inputStream.available()];
+            inputStream.read(data);
+            String jsonString = new String(data, "UTF-8");
+
+            JsonObject jsonObject = gson.fromJson(jsonString, JsonObject.class);
+            if (jsonObject != null && jsonObject.has("humeurs")) {
+                JsonArray humeurArray = jsonObject.getAsJsonArray("humeurs");
+                if (humeurArray.size() > 0) {
+                    return humeurArray.get(0).getAsString();
+                }
+            }
+        } catch (IOException e) {
+            Log.w("JsonReader", "Impossible de lire l'humeur : " + e.getMessage());
+        }
+
+        return null;
+    }
+
+    public static Float getDernierPoids(Context context) {
+        Gson gson = new Gson();
+        String fileName = "bougetoidata.json";
+
+        try (InputStream inputStream = context.openFileInput(fileName)) {
+            byte[] data = new byte[inputStream.available()];
+            inputStream.read(data);
+            String jsonString = new String(data, "UTF-8");
+
+            JsonObject jsonObject = gson.fromJson(jsonString, JsonObject.class);
+            if (jsonObject != null && jsonObject.has("poids")) {
+                JsonArray poidsArray = jsonObject.getAsJsonArray("poids");
+                if (poidsArray.size() > 0) {
+                    return poidsArray.get(0).getAsFloat(); // le plus récent
+                }
+            }
+        } catch (IOException e) {
+            Log.w("JsonReader", "Erreur de lecture du dernier poids : " + e.getMessage());
+        }
+
+        return null; // ou -1f si tu préfères une valeur par défaut
+    }
+
 
     public static List<Float> getPoidsFromJson(Context context) {
         Gson gson = new Gson();
