@@ -36,7 +36,6 @@ public class AffichageSeance extends AppCompatActivity {
 
         // Display the sessions in a pop-up
         showSeancesPopup(filteredSeances, selectedDate);
-        findViewById(R.id.backButton).setOnClickListener(v -> finish());
 
     }
 
