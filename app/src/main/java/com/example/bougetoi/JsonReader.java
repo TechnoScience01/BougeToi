@@ -1,7 +1,6 @@
 package com.example.bougetoi;
 
 import android.content.Context;
-import android.util.Log;
 import com.google.gson.*;
 import com.google.gson.reflect.TypeToken;
 import com.example.bougetoi.Seance;
@@ -55,22 +54,38 @@ public class JsonReader {
             throw new RuntimeException("Erreur lors de l'écriture du fichier JSON", e);
         }
     }
-    public static List<Seance> getSeancesFromJson(Context context) {
-        Gson gson = new Gson();
-        List<Seance> seances = new ArrayList<>();
 
-        try (InputStream inputStream = context.openFileInput(FILE_NAME)) {
+    public static void saveInfoToJson(Context context, UserInfo userInfo) {
+        Gson gson = new GsonBuilder().setPrettyPrinting().create();
+        String fileName = "bougetoidata.json";
+
+        String jsonString = "";
+        try (InputStream inputStream = context.openFileInput(fileName)) {
             byte[] data = new byte[inputStream.available()];
             inputStream.read(data);
-            String jsonString = new String(data, "UTF-8");
-
-            seances = gson.fromJson(jsonString, new TypeToken<List<Seance>>() {}.getType());
-        } catch (Exception e) {
-            // Retourne une liste vide si le fichier n'existe pas ou en cas d'erreur
+            jsonString = new String(data, "UTF-8");
+        } catch (IOException e) {
+            jsonString = "{}";
         }
 
-        return seances;
+        JsonObject jsonObject = gson.fromJson(jsonString, JsonObject.class);
+        if (jsonObject == null) {
+            jsonObject = new JsonObject();
+        }
+
+        JsonElement userInfoJson = gson.toJsonTree(userInfo);
+        jsonObject.add("infoUser", userInfoJson);
+
+        try (FileOutputStream fos = context.openFileOutput(fileName, Context.MODE_PRIVATE);
+             OutputStreamWriter writer = new OutputStreamWriter(fos)) {
+            writer.write(gson.toJson(jsonObject));
+        } catch (IOException e) {
+            throw new RuntimeException("Erreur lors de l'écriture du fichier JSON", e);
+        }
     }
+
+
+        public static morphodata convertJsonToObject(Context context ) {
 
     public static void pushHumeur(Context context, String nouvelleHumeur) {
         Gson gson = new GsonBuilder().setPrettyPrinting().create();
@@ -230,5 +245,39 @@ public class JsonReader {
             throw new RuntimeException(e);
         }
         return new Gson().fromJson(jsonString, new TypeToken<morphodata>(){}.getType());
+    }
+
+    public static UserInfo loadInfoFromJson(Context context) {
+        Gson gson = new Gson();
+        UserInfo userInfo = null;
+
+        try (InputStream inputStream = context.openFileInput("bougetoidata.json")) {
+            byte[] data = new byte[inputStream.available()];
+            inputStream.read(data);
+            String jsonString = new String(data, "UTF-8");
+
+            JsonObject jsonObject = gson.fromJson(jsonString, JsonObject.class);
+            if (jsonObject != null && jsonObject.has("infoUser")) {
+                JsonObject infoUserObject = jsonObject.getAsJsonObject("infoUser");
+                userInfo = gson.fromJson(infoUserObject, UserInfo.class);
+            }
+        } catch (Exception e) {
+            // Return null if the file doesn't exist or an error occurs
+            return null;
+        }
+        return userInfo;
+    }
+
+    public static boolean hasKey(MesInformations mesInformations, String infoUser) {
+        try (InputStream inputStream = mesInformations.openFileInput("bougetoidata.json")) {
+            byte[] data = new byte[inputStream.available()];
+            inputStream.read(data);
+            String jsonString = new String(data, "UTF-8");
+
+            JsonObject jsonObject = new Gson().fromJson(jsonString, JsonObject.class);
+            return jsonObject != null && jsonObject.has(infoUser);
+        } catch (IOException e) {
+            return false; // Si le fichier n'existe pas, on retourne false
+        }
     }
 }

@@ -3,16 +3,19 @@ package com.example.bougetoi;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
-import android.widget.CalendarView;
 import android.widget.Toast;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.view.WindowInsetsCompat;
 import com.example.bougetoi.databinding.ActivityMesSeancesBinding;
+import com.google.gson.Gson;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonObject;
+import com.google.gson.reflect.TypeToken;
 
-import java.util.Calendar;
-import java.util.Date;
+import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.List;
 
 public class MesSeances extends AppCompatActivity implements View.OnClickListener {
 
@@ -49,9 +52,6 @@ public class MesSeances extends AppCompatActivity implements View.OnClickListene
                         Toast.makeText(this,
                                 "Séance " + nomSeance + " ajoutée pour le " + dateSeance,
                                 Toast.LENGTH_SHORT).show();
-
-                        // Ici, vous pouvez ajouter du code pour sauvegarder
-                        // les informations de la séance dans une base de données
                     }
                 }
         );
@@ -60,7 +60,6 @@ public class MesSeances extends AppCompatActivity implements View.OnClickListene
                 new ActivityResultContracts.StartActivityForResult(),
                 result -> {
                     if (result.getResultCode() == RESULT_OK) {
-                        // Vous pouvez gérer les résultats ici si nécessaire
                         Toast.makeText(this, "Activité Exercices terminée", Toast.LENGTH_SHORT).show();
                     }
                 }
@@ -68,11 +67,13 @@ public class MesSeances extends AppCompatActivity implements View.OnClickListene
 
         // Configurer le CalendarView
         binding.calendarView.setOnDateChangeListener((view, year, month, dayOfMonth) -> {
-            Calendar selectedDate = Calendar.getInstance();
-            selectedDate.set(year, month, dayOfMonth);
+            // Formater la date sélectionnée
+            String selectedDate = String.format("%02d/%02d/%d", dayOfMonth, month + 1, year);
 
-            // Ici, vous pouvez ajouter du code pour charger
-            // les séances prévues à cette date
+            // Lancer l'activité AffichageSeance avec la date sélectionnée
+            Intent intent = new Intent(MesSeances.this, AffichageSeance.class);
+            intent.putExtra("SELECTED_DATE", selectedDate);
+            startActivity(intent);
         });
     }
 
@@ -80,16 +81,34 @@ public class MesSeances extends AppCompatActivity implements View.OnClickListene
     public void onClick(View view) {
         int id = view.getId();
         if (id == R.id.butajoutseance) {
-            // Lancer l'activité d'ajout de séance avec le launcher
             Intent intent = new Intent(MesSeances.this, Popup_ajout_seance.class);
             ajoutSeanceLauncher.launch(intent);
         } else if (id == R.id.butexercices) {
             Intent intent = new Intent(MesSeances.this, Exercices.class);
             exercicesLauncher.launch(intent);
-
         } else if (id == R.id.backArrow) {
-            // Terminer cette activité pour revenir en arrière
             finish();
         }
+    }
+
+    private List<Seance> getSeancesFromJson() {
+        Gson gson = new Gson();
+        List<Seance> seances = new ArrayList<>();
+
+        try (InputStream inputStream = openFileInput("bougetoidata.json")) {
+            byte[] data = new byte[inputStream.available()];
+            inputStream.read(data);
+            String jsonString = new String(data, "UTF-8");
+
+            JsonObject jsonObject = gson.fromJson(jsonString, JsonObject.class);
+            if (jsonObject != null && jsonObject.has("seances")) {
+                JsonArray seancesArray = jsonObject.getAsJsonArray("seances");
+                seances = gson.fromJson(seancesArray, new TypeToken<List<Seance>>() {}.getType());
+            }
+        } catch (Exception e) {
+            // Retourne une liste vide si le fichier n'existe pas ou en cas d'erreur
+        }
+
+        return seances;
     }
 }
